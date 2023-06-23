@@ -1,0 +1,36 @@
+- hosts: backup
+  gather_facts: false
+  tasks:
+
+    - include_role:
+        name: segunda
+      when:
+    
+    - include_role:
+        name: terca
+      when:
+    
+    - include_role:
+        name: quarta
+      when:
+
+    - include_role:
+        name: quinta
+      when:
+    
+    - include_role:
+        name: sexta
+      when:
+    
+    - include_role:
+        name: sabado 
+      when:
+
+    - include_role:
+        name: domingo
+      when:
+
+      #when: (ansible_distribution_version | float >= versaoso | float ) and
+            (ansible_facts['os_family'] == "Suse") and
+            (tem_connect_direct == True) and
+            (versao_do_connect | float > versao_connect | float)
