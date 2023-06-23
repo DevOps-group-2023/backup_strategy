@@ -38,13 +38,23 @@
     ################################################################################## Realiza a copia dos arquivos
     - name: Copiando arquivos
       copy:
-        src:
-        dest:
+        src: "{{ item.src }}"
+        dest: "{{ item.dst }}"
       become: true
       loop:
-        - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/1/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra/' }
-        - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/1/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch/' }
-        - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/1/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas/' }
+        - { src: '/mnt/INTRA/1/*-191001.tar.gz', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra/' }
+        - { src: '/mnt/BATCH/1/*-190002.tar.gz', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch/' }
+      
+    - name: Pegando último arquivo da pasta SPCONTAS
+      shell: ls -t /backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/1/ | head -1
+      become: true
+      register: arquivo_atual
+
+    - name: Copiando arquivos
+      copy:
+        src: /mnt/SPCONTAS/1/{{ arquivo_atual.stdout }}
+        dest: "/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas/"
+      become: true
     ################################################################################## Realiza a copia dos arquivos
 
     ################################################################################## Realiza a desmontagem
