@@ -1,0 +1,62 @@
+- hosts: 
+  become: true
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  gather_facts: false
+  become: true
+  tasks:
+    ################################################################################## Realiza a montagem
+    - name: Montar partição INTRA - Domingo
+      mount:
+        src: 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/{{item.src}}
+        path: /mnt/{{item.dst}}
+        opts: ro
+        fstype: nfs
+        state: ephemeral
+      become: true
+      loop:
+        - { src: 'INTRA/7', dst: 'INTRA/7' }
+        - { src: 'BATCH/7', dst: 'BATCH/7' }
+        - { src: 'SPCONTAS/7', dst: 'SPCONTAS/7' }
+    ################################################################################## Realiza a montagem
+
+    ################################################################################## Realiza a montagem
+    - name: Montar partição INTRA - Domingo
+      mount:
+        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/{{item.src}}
+        path: /mnt/{{item.dst}}
+        opts: ro
+        fstype: nfs
+        state: ephemeral
+      become: true
+      loop:
+        - { src: 'prod-intra/bd/intra', dst: 'prod-intra/bd/intra' }
+        - { src: 'prod-intra/bd/batch', dst: 'prod-intra/bd/batch' }
+        - { src: 'prod-intra/bd/spcontas', dst: 'prod-intra/bd/spcontas' }
+    ################################################################################## Realiza a montagem
+    
+    ################################################################################## Realiza a copia dos arquivos
+    - name: Copiando arquivos
+      copy:
+        src:
+        dest:
+      become: true
+      loop:
+        - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/7/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra/' }
+        - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/7/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch/' }
+        - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/7/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas/' }
+    ################################################################################## Realiza a copia dos arquivos
+
+    ################################################################################## Realiza a desmontagem
+      mount:
+        path: /mnt/{{ item.dst }}
+        state: absent
+      become: true
+      loop:
+        - { src: 'prod-intra/bd/intra', dst: 'prod-intra/bd/intra' }
+        - { src: 'prod-intra/bd/batch', dst: 'prod-intra/bd/batch' }
+        - { src: 'prod-intra/bd/spcontas', dst: 'prod-intra/bd/spcontas' }
+        - { src: 'INTRA/7', dst: 'INTRA/7' }
+        - { src: 'BATCH/7', dst: 'BATCH/7' }
+        - { src: 'SPCONTAS/7', dst: 'SPCONTAS/7' }
+    ################################################################################## Realiza a desmontagem
