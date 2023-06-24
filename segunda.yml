@@ -1,3 +1,58 @@
+# ####################################################
+# Backup dos Banco de dados Dirario  - Sempre ás 22h #
+# ####################################################
+
+# Objetivo: Transferir os backup do Storage 10.6.45.202 para o Storage nas3.dpe-go.intra. De segunda a Domingo. Ponto de atenção Quando for na outra segunda,
+# o arquivo que seria 8 vai sobreescrever o arquivo 1 que seria da primeira segunda feira.
+
+
+# Passos do Playbook
+
+# 1) Montar - 10.6.45.202 - INTRA,BATCH,SPCONTAS 1-7
+# 2) Montar - nas3.dpe-go.intra - intra,batch,spcontas 1-7
+# 3) Copiar arquivos (Origem) 10.6.45.202 - INTRA,BATCH,SPCONTAS 1-7 para Destino (Destino) nas3.dpe-go.intra - intra,batch,spcontas 1-7
+# 4) Desmontar origem (10.6.45.202 - INTRA,BATCH,SPCONTAS) e Destino (nas3.dpe-go.intra - intra,batch,spcontas) 1-7
+
+
+# Storage --> 10.6.45.202    Sempre ás 22h                                                           Storage --> nas3.dpe-go.intra Sempre ás 22h  
+
+
+# Segunda                                                                Segunda 
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/1/*-191001.tar.g        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/1/*-190002.tar.gz       nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/1/ls -t | head -1    nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas
+
+
+# Terça                                                                  Terça
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/2/*-191001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/2/*-190001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/2/ls -t | head -1     nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas
+
+# Quarta                                                                 Qaurta
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/3/*-191001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/3/*-190002.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/3/ls -t | head -1     nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas
+
+# Quinta                                                                 Quinta
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/4/*-191001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/4/*-190001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/4/ls -t | head -1     nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas
+
+# Sexta                                                                  Sexta
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/5/*-191001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/5/*-191001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/5/ls -t | head -1     nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas
+
+# Sabado                                                                Sabado
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/6/*-191001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/6/*-190001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/6/ls -t | head -1     nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas
+
+# Domingo                                                                Domingo
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/7/*-191001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/7/*-190001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch
+# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/7/ls -t | head -1     nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas
+
 - hosts: 
   become: true
   vars:

@@ -1,0 +1,89 @@
+# ###################################
+# Backup dos Banco de dados Mensal  #
+# ###################################
+
+# Objetivo: Copiar sempre o primeiro dia de cada mês. Nesse caso ás 23h. 
+
+# Passos do Playbook
+
+# 1) Montar - nas3.dpe-go.intra - INTRA,BATCH,SPCONTAS
+# 2) Montar - nas3.dpe-go.intra - intra,batch,spcontas
+# 3) Copiar arquivos o Ultimo arquivo de Domingo - (Origem Semanal) nas3.dpe-go.intra - INTRA,BATCH,SPCONTAS para Destino (Destino Mensal) nas3.dpe-go.intra - intra,batch,spcontas
+# 4) Desmontar origem (nas3.dpe-go.intra - INTRA,BATCH,SPCONTAS) e Destino (nas3.dpe-go.intra - intra,batch,spcontas)
+ 
+# nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/SEMANAL/prod-intra/bd/intra         nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/intra        
+# nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/SEMANAL/prod-intra/bd/batch         nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/batch
+# nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/SEMANAL/prod-intra/bd/spcontas      nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/spcontas
+
+- hosts: 
+  become: true
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  gather_facts: false
+  become: true
+  tasks:
+    ################################################################################## Realiza a montagem
+    - name: Montar partição INTRA, BATH e SPCONTAS
+      mount:
+        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/SEMANAL/prod-intra/bd/{{item.src}}
+        path: /mnt/{{item.dst}}
+        opts: ro
+        fstype: nfs
+        state: ephemeral
+      become: true
+      loop:
+        - { src: 'intra', dst: 'intra' }
+        - { src: 'batch', dst: 'batch' }
+        - { src: 'spcontas', dst: 'spcontas' }
+    ################################################################################## Realiza a montagem
+
+    ################################################################################## Realiza a montagem
+    - name: Montar partição INTRA
+      mount:
+        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/{{item.src}}
+        path: /mnt/{{item.dst}}
+        opts: ro
+        fstype: nfs
+        state: ephemeral
+      become: true
+      loop:
+        - { src: 'intra', dst: 'intra' }
+        - { src: 'batch', dst: 'batch' }
+        - { src: 'spcontas', dst: 'spcontas' }
+    ################################################################################## Realiza a montagem
+    
+    ################################################################################## Realiza a copia dos arquivos
+    - name: Copiando arquivos
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dst }}"
+      become: true
+      loop:
+        - { src: '/mnt/INTRA/1/*-191001.tar.gz', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra/' }
+        - { src: '/mnt/BATCH/1/*-190002.tar.gz', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch/' }
+      
+    - name: Pegando último arquivo da pasta SPCONTAS
+      shell: ls -t /mnt/SPCONTAS/1/' | head -1
+      become: true
+      register: arquivo_atual
+
+    - name: Copiando arquivos
+      copy:
+        src: /mnt/SPCONTAS/1/{{ arquivo_atual.stdout }}
+        dest: "/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas/"
+      become: true
+    ################################################################################## Realiza a copia dos arquivos
+
+    ################################################################################## Realiza a desmontagem
+      mount:
+        path: /mnt/{{ item.dst }}
+        state: absent
+      become: true
+      loop:
+        - dst: 'intra' 
+        - dst: 'batch'
+        - dst: 'spcontas'
+        - dst: 'INTRA/1'
+        - dst: 'BATCH/1'
+        - dst: 'SPCONTAS/1'
+    ################################################################################## Realiza a desmontagem

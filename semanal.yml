@@ -1,3 +1,21 @@
+# #####################################################
+# Backup Banco de dados Semanal  -  Sempre ás 22h     #
+# #####################################################
+
+# Objetivo: copiar sempre o ultimo arquivo(7=Domingo), nesse caso sempre aos Domingo ás 22h. Atenção sempre mantém 7 dias e depois sobreescrever no 8 dia.
+
+# Passos do Playbook
+
+# 1) Montar - nas3.dpe-go.intra - INTRA,BATCH,SPCONTAS
+# 2) Montar - nas3.dpe-go.intra - intra,batch,spcontas
+# 3) Copiar arquivos o Ultimo arquivo de Domingo - (Origem Diario) nas3.dpe-go.intra - INTRA,BATCH,SPCONTAS para Destino (Destino Semanal) nas3.dpe-go.intra - intra,batch,spcontas
+# 4) Desmontar origem (nas3.dpe-go.intra - INTRA,BATCH,SPCONTAS) e Destino (nas3.dpe-go.intra - intra,batch,spcontas)
+
+
+# nas3.dpe-go.intra:mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra               nas3.dpe-go.intra:mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/intra          
+# nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch              nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/batch
+# nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas           nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/spcontas
+
 - hosts: 
   become: true
   vars:
