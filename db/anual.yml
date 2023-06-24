@@ -1,36 +1,11 @@
-# ####################################### INICIO DO BANCO DE DADOS #################################################################################################################
+---
 
-
-# ###################################
-# Backup Dos Banco de dados Anual   #
-# ###################################
-
-# Objetivo: Copiar sempre o Uma vez a cada Ano. Horario não defenido, será por demanda.
-
-# Passos do Playbook
-
-
-# 1) Montar - nas3.dpe-go.intra - INTRA,BATCH,SPCONTAS
-# 2) Montar - nas3.dpe-go.intra - intra,batch,spcontas
-# 3) Copiar arquivos o Ultimo arquivo de Domingo - (Origem Mensal) nas3.dpe-go.intra - INTRA,BATCH,SPCONTAS para Destino (Destino Anual) nas3.dpe-go.intra - intra,batch,spcontas
-# 4) Desmontar origem (nas3.dpe-go.intra - INTRA,BATCH,SPCONTAS) e Destino (nas3.dpe-go.intra - intra,batch,spcontas)
-
-
-# nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/intra       nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/ANUAL/prod-intra/bd/intra
-# nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/batch       nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/ANUAL/prod-intra/bd/batch
-# nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/spcontas    nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/ANUAL/prod-intra/bd/spcontas
-
-
-# ####################################### FIM DO BANCO DE DADOS #################################################################################################################
-
-- hosts: 
+- hosts:
   become: true
   vars:
     ansible_python_interpreter: /usr/bin/python3
   gather_facts: false
-  become: true
   tasks:
-    ################################################################################## Realiza a montagem
     - name: Montar partição INTRA, BATH e SPCONTAS
       mount:
         src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/{{item.src}}
@@ -40,12 +15,10 @@
         state: ephemeral
       become: true
       loop:
-        - { src: 'intra', dst: 'intra' }
-        - { src: 'batch', dst: 'batch' }
-        - { src: 'spcontas', dst: 'spcontas' }
-    ################################################################################## Realiza a montagem
+        - {src: 'intra', dst: 'intra'}
+        - {src: 'batch', dst: 'batch'}
+        - {src: 'spcontas', dst: 'spcontas'}
 
-    ################################################################################## Realiza a montagem
     - name: Montar partição INTRA
       mount:
         src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/ANUAL/prod-intra/bd/{{item.src}}
@@ -55,11 +28,11 @@
         state: ephemeral
       become: true
       loop:
-        - { src: 'intra', dst: 'intra' }
-        - { src: 'batch', dst: 'batch' }
-        - { src: 'spcontas', dst: 'spcontas' }
+        - {src: 'intra', dst: 'intra'}
+        - {src: 'batch', dst: 'batch'}
+        - {src: 'spcontas', dst: 'spcontas'}
     ################################################################################## Realiza a montagem
-    
+
     ################################################################################## Realiza a copia dos arquivos
     - name: Copiando arquivos
       copy:
@@ -67,14 +40,14 @@
         dest: "{{ item.dst }}"
       become: true
       loop:
-        - { src: '/mnt/INTRA/1/*-191001.tar.gz', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra/' }
-        - { src: '/mnt/BATCH/1/*-190002.tar.gz', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch/' }
-      
+        - {src: '/mnt/INTRA/1/*-191001.tar.gz', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra/'}
+        - {src: '/mnt/BATCH/1/*-190002.tar.gz', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch/'}
+
     - name: Pegando último arquivo da pasta SPCONTAS
       shell: ls -t /mnt/SPCONTAS/1/' | head -1
       become: true
       register: arquivo_atual_spcontas
-      
+
 
     - name: Copiando arquivos
       copy:
@@ -87,7 +60,6 @@
       mount:
         path: /mnt/{{ item.dst }}
         state: absent
-      become: true
       loop:
         - dst: 'intra' 
         - dst: 'batch'

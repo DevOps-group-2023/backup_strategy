@@ -22,7 +22,6 @@
   vars:
     ansible_python_interpreter: /usr/bin/python3
   gather_facts: false
-  become: true
   tasks:
     ################################################################################## Realiza a montagem
     - name: Montar partição 
@@ -40,7 +39,7 @@
     ################################################################################## Realiza a montagem
 
     ################################################################################## Realiza a montagem
-    - name: Montar partição 
+    - name: Montar partição
       mount:
         src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/{{ item }}
         path: /mnt/destino-{{ item }}
