@@ -12,3 +12,59 @@
 # 4) Desmontar origem (Origem - nas3.dpe-go.intra) e Destino ( Destino - nas3.dpe-go.intra)
 
 # nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/   nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
+
+- hosts: backup
+  become: true
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  gather_facts: false
+  become: true
+  tasks:
+    ################################################################################## Realiza a montagem
+    - name: Montar partição 
+      mount:
+        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
+        path: /mnt/origem
+        opts: ro
+        fstype: nfs
+        state: ephemeral
+      become: true
+
+    ################################################################################## Realiza a montagem
+
+    ################################################################################## Realiza a montagem
+    - name: Montar partição
+      mount:
+        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
+        path: /mnt/destino
+        opts: ro
+        fstype: nfs
+        state: ephemeral
+      become: true
+    ################################################################################## Realiza a montagem
+    
+    ################################################################################## Realizando DIFF
+    - name: Executar diff
+      command: diff /mnt/origem/ /mnt/destino/
+      register: diff_result
+      ignore_errors: true
+    ################################################################################## Realizando DIFF
+
+    ################################################################################## Copiando alterações
+    - name: Copiando arquivos
+      copy:
+        src: /mnt/origem/
+        dest: /mnt/destino/
+      become: true
+      when: diff_result.stdout != ""
+    ################################################################################## Copiando alterações
+
+    ################################################################################## Realiza a desmontagem
+      mount:
+        path: /mnt/{{ item.dst }}
+        state: absent
+      become: true
+      loop:
+        - /mnt/origem/
+        - /mnt/destino/
+    ################################################################################## Realiza a desmontagem
