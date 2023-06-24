@@ -15,3 +15,78 @@
 
 # nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/   nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/
 # nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/    nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/
+
+- hosts: backup
+  become: true
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  gather_facts: false
+  become: true
+  tasks:
+    ################################################################################## Realiza a montagem
+    - name: Montar partição 
+      mount:
+        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/{{ item }}/
+        path: /mnt/origem-{{ item }}
+        opts: ro
+        fstype: nfs
+        state: ephemeral
+      become: true
+      loop:
+        - nexus
+        - git
+    ################################################################################## Realiza a montagem
+
+    ################################################################################## Realiza a montagem
+    - name: Montar partição 
+      mount:
+        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/{{ item }}/
+        path: /mnt/destino-{{ item }}
+        opts: ro
+        fstype: nfs
+        state: ephemeral
+      become: true
+      loop:
+        - nexus
+        - git
+    ################################################################################## Realiza a montagem
+    
+    ################################################################################## Realizando DIFF
+    - name: Executar diff
+      command: diff /mnt/origem-nexus/ /mnt/destino-nexus/
+      register: diff_result_nexus
+      ignore_errors: true
+
+    - name: Executar diff
+      command: diff /mnt/origem-git/ /mnt/destino-git/
+      register: diff_result_git
+      ignore_errors: true
+    ################################################################################## Realizando DIFF
+
+    ################################################################################## Copiando alterações
+    - name: Copiando arquivos
+      copy:
+        src: /mnt/origem-git/
+        dest: /mnt/destino-git/
+      become: true
+      when: diff_result_git.stdout != ""
+
+    - name: Copiando arquivos
+      copy:
+        src: /mnt/origem-nexus/
+        dest: /mnt/destino-nexus/
+      become: true
+      when: diff_result_nexus.stdout != ""
+    ################################################################################## Copiando alterações
+
+    ################################################################################## Realiza a desmontagem
+      mount:
+        path: /mnt/{{ item.dst }}
+        state: absent
+      become: true
+      loop:
+        - /mnt/origem-git/
+        - /mnt/origem-nexus/
+        - /mnt/destino-git/
+        - /mnt/destino-nexus/
+    ################################################################################## Realiza a desmontagem
