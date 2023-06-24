@@ -6,7 +6,7 @@
   become: true
   tasks:
     ################################################################################## Realiza a montagem
-    - name: Montar partição INTRA - Terça
+    - name: Montar partição INTRA - Quarta
       mount:
         src: 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/{{item.src}}
         path: /mnt/{{item.dst}}
@@ -21,7 +21,7 @@
     ################################################################################## Realiza a montagem
 
     ################################################################################## Realiza a montagem
-    - name: Montar partição INTRA - Terça
+    - name: Montar partição INTRA - Quarta
       mount:
         src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/{{item.src}}
         path: /mnt/{{item.dst}}

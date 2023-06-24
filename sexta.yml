@@ -6,7 +6,7 @@
   become: true
   tasks:
     ################################################################################## Realiza a montagem
-    - name: Montar partição INTRA - Terça
+    - name: Montar partição INTRA - Sexta
       mount:
         src: 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/{{item.src}}
         path: /mnt/{{item.dst}}
@@ -15,13 +15,13 @@
         state: ephemeral
       become: true
       loop:
-        - { src: 'INTRA/3', dst: 'INTRA/3' }
-        - { src: 'BATCH/3', dst: 'BATCH/3' }
-        - { src: 'SPCONTAS/3', dst: 'SPCONTAS/3' }
+        - { src: 'INTRA/5', dst: 'INTRA/5' }
+        - { src: 'BATCH/5', dst: 'BATCH/5' }
+        - { src: 'SPCONTAS/5', dst: 'SPCONTAS/5' }
     ################################################################################## Realiza a montagem
 
     ################################################################################## Realiza a montagem
-    - name: Montar partição INTRA - Terça
+    - name: Montar partição INTRA - Sexta
       mount:
         src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/{{item.src}}
         path: /mnt/{{item.dst}}
@@ -42,9 +42,9 @@
         dest:
       become: true
       loop:
-        - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/3/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra/' }
-        - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/3/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch/' }
-        - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/3/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas/' }
+        - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/5/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra/' }
+        - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/5/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch/' }
+        - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/5/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas/' }
     ################################################################################## Realiza a copia dos arquivos
 
     ################################################################################## Realiza a desmontagem
@@ -56,7 +56,7 @@
         - { src: 'prod-intra/bd/intra', dst: 'prod-intra/bd/intra' }
         - { src: 'prod-intra/bd/batch', dst: 'prod-intra/bd/batch' }
         - { src: 'prod-intra/bd/spcontas', dst: 'prod-intra/bd/spcontas' }
-        - { src: 'INTRA/3', dst: 'INTRA/3' }
-        - { src: 'BATCH/3', dst: 'BATCH/3' }
-        - { src: 'SPCONTAS/3', dst: 'SPCONTAS/3' }
+        - { src: 'INTRA/5', dst: 'INTRA/5' }
+        - { src: 'BATCH/5', dst: 'BATCH/5' }
+        - { src: 'SPCONTAS/5', dst: 'SPCONTAS/5' }
     ################################################################################## Realiza a desmontagem
