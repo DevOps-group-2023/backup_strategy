@@ -53,7 +53,7 @@
 # 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/7/*-190001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch
 # 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/7/ls -t | head -1     nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas
 
-- hosts: 
+- hosts: backup
   become: true
   vars:
     ansible_python_interpreter: /usr/bin/python3
@@ -125,20 +125,7 @@
       become: truess
     ################################################################################## Realiza a copia dos arquivos
 
-    ################################################################################## Realiza a desmontagem
-      mount:
-        path: /mnt/{{ item.dst }}
-        state: absent
-      become: true
-      loop:
-        - { src: 'prod-intra/bd/intra', dst: 'prod-intra/bd/intra' }
-        - { src: 'prod-intra/bd/batch', dst: 'prod-intra/bd/batch' }
-        - { src: 'prod-intra/bd/spcontas', dst: 'prod-intra/bd/spcontas' }
-        - { src: 'INTRA/1', dst: 'INTRA/1' }
-        - { src: 'BATCH/1', dst: 'BATCH/1' }
-        - { src: 'SPCONTAS/1', dst: 'SPCONTAS/1' }
-    ################################################################################## Realiza a desmontagem
-
+    ################################################################################## Realiza a remoção do arquivo mais antigo da pasta
     - shell: ls -t /mnt/prod-intra/bd/intra/ | tail -1
       register: ultimo_arquivo_intra
 
@@ -165,3 +152,18 @@
         path: /mnt/prod-intra/bd/spcontas/{{ ultimo_arquivo_spcontas }}
         state: absent
       become: true
+    ################################################################################## Realiza a remoção do arquivo mais antigo da pasta
+
+    ################################################################################## Realiza a desmontagem
+      mount:
+        path: /mnt/{{ item.dst }}
+        state: absent
+      become: true
+      loop:
+        - { src: 'prod-intra/bd/intra', dst: 'prod-intra/bd/intra' }
+        - { src: 'prod-intra/bd/batch', dst: 'prod-intra/bd/batch' }
+        - { src: 'prod-intra/bd/spcontas', dst: 'prod-intra/bd/spcontas' }
+        - { src: 'INTRA/1', dst: 'INTRA/1' }
+        - { src: 'BATCH/1', dst: 'BATCH/1' }
+        - { src: 'SPCONTAS/1', dst: 'SPCONTAS/1' }
+    ################################################################################## Realiza a desmontagem

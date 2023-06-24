@@ -1,4 +1,6 @@
-- hosts: 
+---
+
+- hosts: backup
   become: true
   vars:
     ansible_python_interpreter: /usr/bin/python3
@@ -36,27 +38,68 @@
     ################################################################################## Realiza a montagem
     
     ################################################################################## Realiza a copia dos arquivos
-    - name: Copiando arquivos
-      copy:
-        src:
-        dest:
+    - name: Pegando último arquivo da pasta INTRA
+      shell: ls -t /mnt/INTRA/3/' | head -1
       become: true
-      loop:
-        - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/3/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra/' }
-        - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/3/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch/' }
-        #- { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/3/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas/' }
+      register: arquivo_atual_intra
+
+    - name: Pegando último arquivo da pasta BATCH
+      shell: ls -t /mnt/BATCH/3/' | head -1
+      become: true
+      register: arquivo_atual_batch
 
     - name: Pegando último arquivo da pasta SPCONTAS
       shell: ls -t /mnt/SPCONTAS/3/' | head -1
       become: true
-      register: arquivo_atual
+      register: arquivo_atual_spcontas
+
+    - name: Copiando arquivos INTRA
+      copy:
+        src: /mnt/INTRA/3/{{ arquivo_atual_intra.stdout }}
+        dest: "/mnt/prod-intra/bd/intra"
+      become: true
+
+    - name: Copiando arquivos INTRA
+      copy:
+        src: /mnt/BATCH/3/{{ arquivo_atual_batch.stdout }}
+        dest: "/mnt/prod-intra/bd/batch"
+      become: true
 
     - name: Copiando arquivos
       copy:
-        src: /mnt/SPCONTAS/3/{{ arquivo_atual.stdout }}
-        dest: "/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas/"
-      become: true
+        src: /mnt/SPCONTAS/3/{{ arquivo_atual_spcontas.stdout }}
+        dest: "/mnt/prod-intra/bd/spcontas"
+      become: truess
     ################################################################################## Realiza a copia dos arquivos
+
+    ################################################################################## Realiza a remoção do arquivo mais antigo da pasta
+    - shell: ls -t /mnt/prod-intra/bd/intra/ | tail -1
+      register: ultimo_arquivo_intra
+
+    - shell: ls -t /mnt/prod-intra/bd/batch/ | tail -1
+      register: ultimo_arquivo_batch
+    
+    - shell: ls -t /mnt/prod-intra/bd/spcontas/ | tail -1
+      register: ultimo_arquivo_spcontas
+
+    - name: Remove file (delete file)
+      file:
+        path: /mnt/prod-intra/bd/intra/{{ ultimo_arquivo_intra }}
+        state: absent
+      become: true
+
+    - name: Remove file (delete file)
+      file:
+        path: /mnt/prod-intra/bd/batch/{{ ultimo_arquivo_batch }}
+        state: absent
+      become: true
+
+    - name: Remove file (delete file)
+      file:
+        path: /mnt/prod-intra/bd/spcontas/{{ ultimo_arquivo_spcontas }}
+        state: absent
+      become: true
+    ################################################################################## Realiza a remoção do arquivo mais antigo da pasta
 
     ################################################################################## Realiza a desmontagem
       mount:
