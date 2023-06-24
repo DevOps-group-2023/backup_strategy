@@ -92,17 +92,17 @@
     
     ################################################################################## Realiza a copia dos arquivos
     - name: Pegando último arquivo da pasta INTRA
-      shell: ls -t /mnt/INTRA/1/' | head -1
+      shell: ls -t /mnt/INTRA/1/ | head -1
       become: true
       register: arquivo_atual_intra
 
     - name: Pegando último arquivo da pasta BATCH
-      shell: ls -t /mnt/BATCH/1/' | head -1
+      shell: ls -t /mnt/BATCH/1/ | head -1
       become: true
       register: arquivo_atual_batch
 
     - name: Pegando último arquivo da pasta SPCONTAS
-      shell: ls -t /mnt/SPCONTAS/1/' | head -1
+      shell: ls -t/mnt/SPCONTAS/1/ | head -1
       become: true
       register: arquivo_atual_spcontas
 
@@ -122,7 +122,7 @@
       copy:
         src: /mnt/SPCONTAS/1/{{ arquivo_atual_spcontas.stdout }}
         dest: "/mnt/prod-intra/bd/spcontas"
-      become: truess
+      become: true
     ################################################################################## Realiza a copia dos arquivos
 
     ################################################################################## Realiza a remoção do arquivo mais antigo da pasta

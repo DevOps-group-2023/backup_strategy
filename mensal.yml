@@ -23,10 +23,10 @@
   become: true
   tasks:
     ################################################################################## Realiza a montagem
-    - name: Montar partição INTRA, BATH e SPCONTAS
+    - name: Montar partição INTRA, BATH e SPCONTAS no Domingo
       mount:
         src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/SEMANAL/prod-intra/bd/{{item.src}}
-        path: /mnt/{{item.dst}}
+        path: /mnt/origem/{{item.dst}}
         opts: ro
         fstype: nfs
         state: ephemeral
@@ -38,10 +38,10 @@
     ################################################################################## Realiza a montagem
 
     ################################################################################## Realiza a montagem
-    - name: Montar partição INTRA
+    - name: Montar partição INTRA no Domingo
       mount:
         src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/{{item.src}}
-        path: /mnt/{{item.dst}}
+        path: /mnt/destino/{{item.dst}}
         opts: ro
         fstype: nfs
         state: ephemeral
@@ -53,26 +53,68 @@
     ################################################################################## Realiza a montagem
     
     ################################################################################## Realiza a copia dos arquivos
-    - name: Copiando arquivos
-      copy:
-        src: "{{ item.src }}"
-        dest: "{{ item.dst }}"
+    - name: Pegando último arquivo da pasta INTRA
+      shell: ls -t /mnt/prod-intra/bd/intra/ | head -1
       become: true
-      loop:
-        - { src: '/mnt/INTRA/1/*-191001.tar.gz', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra/' }
-        - { src: '/mnt/BATCH/1/*-190002.tar.gz', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch/' }
-      
+      register: arquivo_atual_intra
+
+    - name: Pegando último arquivo da pasta BATCH
+      shell: ls -t /mnt/prod-intra/bd/batch/ | head -1
+      become: true
+      register: arquivo_atual_batch
+
     - name: Pegando último arquivo da pasta SPCONTAS
-      shell: ls -t /mnt/SPCONTAS/1/' | head -1
+      shell: ls -t /mnt/prod-intra/bd/spcontas/ | head -1
       become: true
-      register: arquivo_atual
+      register: arquivo_atual_spcontas
+
+    - name: Copiando arquivos INTRA
+      copy:
+        src: /mnt/INTRA/7/{{ arquivo_atual_intra.stdout }}
+        dest: "/mnt/prod-intra/bd/intra"
+      become: true
+
+    - name: Copiando arquivos INTRA
+      copy:
+        src: /mnt/BATCH/7/{{ arquivo_atual_batch.stdout }}
+        dest: "/mnt/prod-intra/bd/batch"
+      become: true
 
     - name: Copiando arquivos
       copy:
-        src: /mnt/SPCONTAS/1/{{ arquivo_atual.stdout }}
-        dest: "/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas/"
+        src: /mnt/SPCONTAS/7/{{ arquivo_atual_spcontas.stdout }}
+        dest: "/mnt/prod-intra/bd/spcontas"
       become: true
     ################################################################################## Realiza a copia dos arquivos
+
+    ################################################################################## Realiza a remoção do arquivo mais antigo da pasta
+    - shell: ls -t /mnt/prod-intra/bd/intra/ | tail -1
+      register: ultimo_arquivo_intra
+
+    - shell: ls -t /mnt/prod-intra/bd/batch/ | tail -1
+      register: ultimo_arquivo_batch
+    
+    - shell: ls -t /mnt/prod-intra/bd/spcontas/ | tail -1
+      register: ultimo_arquivo_spcontas
+
+    - name: Remove file (delete file)
+      file:
+        path: /mnt/prod-intra/bd/intra/{{ ultimo_arquivo_intra }}
+        state: absent
+      become: true
+
+    - name: Remove file (delete file)
+      file:
+        path: /mnt/prod-intra/bd/batch/{{ ultimo_arquivo_batch }}
+        state: absent
+      become: true
+
+    - name: Remove file (delete file)
+      file:
+        path: /mnt/prod-intra/bd/spcontas/{{ ultimo_arquivo_spcontas }}
+        state: absent
+      become: true
+    ################################################################################## Realiza a remoção do arquivo mais antigo da pasta
 
     ################################################################################## Realiza a desmontagem
       mount:
@@ -80,10 +122,10 @@
         state: absent
       become: true
       loop:
-        - dst: 'intra' 
-        - dst: 'batch'
-        - dst: 'spcontas'
-        - dst: 'INTRA/1'
-        - dst: 'BATCH/1'
-        - dst: 'SPCONTAS/1'
+        - { src: 'prod-intra/bd/intra', dst: 'prod-intra/bd/intra' }
+        - { src: 'prod-intra/bd/batch', dst: 'prod-intra/bd/batch' }
+        - { src: 'prod-intra/bd/spcontas', dst: 'prod-intra/bd/spcontas' }
+        - { src: 'INTRA/7', dst: 'INTRA/7' }
+        - { src: 'BATCH/7', dst: 'BATCH/7' }
+        - { src: 'SPCONTAS/7', dst: 'SPCONTAS/7' }
     ################################################################################## Realiza a desmontagem

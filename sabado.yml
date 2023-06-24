@@ -8,7 +8,7 @@
   become: true
   tasks:
     ################################################################################## Realiza a montagem
-    - name: Montar partição INTRA - Sábado
+    - name: Montar partição INTRA - Sabado
       mount:
         src: 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/{{item.src}}
         path: /mnt/{{item.dst}}
@@ -23,7 +23,7 @@
     ################################################################################## Realiza a montagem
 
     ################################################################################## Realiza a montagem
-    - name: Montar partição INTRA - Sábado
+    - name: Montar partição INTRA - Sabado
       mount:
         src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/{{item.src}}
         path: /mnt/{{item.dst}}
@@ -39,17 +39,17 @@
     
     ################################################################################## Realiza a copia dos arquivos
     - name: Pegando último arquivo da pasta INTRA
-      shell: ls -t /mnt/INTRA/6/' | head -1
+      shell: ls -t /mnt/INTRA/1/ | head -1
       become: true
       register: arquivo_atual_intra
 
     - name: Pegando último arquivo da pasta BATCH
-      shell: ls -t /mnt/BATCH/6/' | head -1
+      shell: ls -t /mnt/BATCH/1/ | head -1
       become: true
       register: arquivo_atual_batch
 
     - name: Pegando último arquivo da pasta SPCONTAS
-      shell: ls -t /mnt/SPCONTAS/6/' | head -1
+      shell: ls -t/mnt/SPCONTAS/1/ | head -1
       become: true
       register: arquivo_atual_spcontas
 
@@ -69,7 +69,7 @@
       copy:
         src: /mnt/SPCONTAS/6/{{ arquivo_atual_spcontas.stdout }}
         dest: "/mnt/prod-intra/bd/spcontas"
-      become: truess
+      become: true
     ################################################################################## Realiza a copia dos arquivos
 
     ################################################################################## Realiza a remoção do arquivo mais antigo da pasta
