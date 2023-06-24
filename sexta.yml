@@ -44,7 +44,7 @@
       loop:
         - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/5/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra/' }
         - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/5/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch/' }
-        - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/5/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas/' }
+        #- { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/5/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas/' }
 
     - name: Pegando último arquivo da pasta SPCONTAS
       shell: ls -t /mnt/SPCONTAS/5/' | head -1

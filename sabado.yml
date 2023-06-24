@@ -44,7 +44,18 @@
       loop:
         - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/6/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra/' }
         - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/6/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch/' }
-        - { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/6/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas/' }
+        #- { src: '/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/6/*', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas/' }
+
+    - name: Pegando último arquivo da pasta SPCONTAS
+      shell: ls -t /mnt/SPCONTAS/6/' | head -1
+      become: true
+      register: arquivo_atual
+
+    - name: Copiando arquivos
+      copy:
+        src: /mnt/SPCONTAS/6/{{ arquivo_atual.stdout }}
+        dest: "/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas/"
+      become: true
     ################################################################################## Realiza a copia dos arquivos
 
     ################################################################################## Realiza a desmontagem
