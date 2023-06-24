@@ -24,7 +24,7 @@
   become: true
   tasks:
     ################################################################################## Realiza a montagem
-    - name: Montar partição INTRA - Segunda
+    - name: Montar partição INTRA
       mount:
         src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/arquivos/diferencial/dom 
         path: /mnt/origem
@@ -35,7 +35,7 @@
     ################################################################################## Realiza a montagem
 
     ################################################################################## Realiza a montagem
-    - name: Montar partição INTRA - Segunda
+    - name: Montar partição INTRA
       mount:
         src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/SEMANAL/prod-intra/arquivos/completo
         path: /mnt/destino
