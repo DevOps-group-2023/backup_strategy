@@ -1,0 +1,24 @@
+# ###########################################
+# Backup do ELK  Dirario  -  Sempre ás 22h  #
+# ###########################################
+
+
+# Objetivo: Copiar todos os arquivos da diretorio ELK  que está no storage 10.6.45.202 para o nas3.dpe-go.intra. Ponto de antecção,
+# Sempre comprar o di seguinte com o dia anterior, ou seja, se teve alteração nos arquivos de segunda para terça então copiar se não tem mantém.
+
+# Passos do Playbook
+
+
+# 1) Montar - 10.6.45.202:/backup/prod_intra/horas3a/ELK 
+# 2) Montar - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
+# 3) Copiar arquivos comparando, exemplo diff - (Origem - 10.6.45.202) para Destino (Destino - nas3.dpe-go.intra)
+# 4) Desmontar origem (Origem - 10.6.45.202) e Destino ( Destino - nas3.dpe-go.intra)
+
+
+# 10.6.45.202:/backup/prod_intra/horas3a/ELK     Segunda - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
+#                                                Terça - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
+#                                                Qaurta - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/ 
+#                                                Quinta - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
+#                                                Sexta - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
+#                                                Sabado - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
+#                                                Domingo - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
