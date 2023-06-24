@@ -1,0 +1,33 @@
+# ###########################################
+# Backup do ELK  Dirario  -  Sempre ás 22h  #
+# ###########################################
+
+
+# Objetivo: opiar todos os arquivos da diretorio backup_gitlab e backup_nexus, que estão no storage 10.6.45.202 para o nas3.dpe-go.intra. Ponto de antecção,
+# Sempre comprar o dia seguinte com o dia anterior, ou seja, se teve alteração nos arquivos de segunda para terça então copiar se não tem mantém.
+
+# Passos do Playbook
+
+# 1) Montar - 10.6.45.202:/backup/iris3/backup_gitlab e 10.6.45.202:/backup/iris3/backup_nexus
+# 2) Montar - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/{Segunda -Domingo} e nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/{Segunda -Domingo} 
+# 3) Copiar arquivos comparando, exemplo diff - (Origem - 10.6.45.202) para Destino (Destino - nas3.dpe-go.intra)
+# 4) Desmontar origem (Origem - 10.6.45.202) e Destino ( Destino - nas3.dpe-go.intra)
+
+
+# 10.6.45.202:/backup/iris3/backup_gitlab   nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/seg
+# 10.6.45.202:/backup/iris3/backup_gitlab   nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/ter
+# 10.6.45.202:/backup/iris3/backup_gitlab   nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/qua
+# 10.6.45.202:/backup/iris3/backup_gitlab   nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/qui
+# 10.6.45.202:/backup/iris3/backup_gitlab   nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/sex
+# 10.6.45.202:/backup/iris3/backup_gitlab   nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/sab
+# 10.6.45.202:/backup/iris3/backup_gitlab   nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/dom 
+
+
+
+# 10.6.45.202:/backup/iris3/backup_nexus  nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/seg
+# 10.6.45.202:/backup/iris3/backup_nexus  nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/ter
+# 10.6.45.202:/backup/iris3/backup_nexus  nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/qua
+# 10.6.45.202:/backup/iris3/backup_nexus  nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/qui
+# 10.6.45.202:/backup/iris3/backup_nexus  nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/sex
+# 10.6.45.202:/backup/iris3/backup_nexus  nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/sab
+# 10.6.45.202:/backup/iris3/backup_nexus  nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/dom
