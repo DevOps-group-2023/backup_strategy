@@ -17,10 +17,9 @@
 # nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/arquivos/diferencial/dom              nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/SEMANAL/prod-intra/arquivos/complet
 
 - hosts: backup
-  become: true
+  gather_facts: false
   vars:
     ansible_python_interpreter: /usr/bin/python3
-  gather_facts: false
   become: true
   tasks:
     ################################################################################## Realiza a montagem
@@ -31,7 +30,6 @@
         opts: ro
         fstype: nfs
         state: ephemeral
-      become: true
     ################################################################################## Realiza a montagem
 
     ################################################################################## Realiza a montagem
@@ -42,7 +40,6 @@
         opts: ro
         fstype: nfs
         state: ephemeral
-      become: true
     ################################################################################## Realiza a montagem
     
     ################################################################################## Realizando DIFF
@@ -57,7 +54,6 @@
       copy:
         src: /mnt/origem/
         dest: /mnt/destino
-      become: true
       when: diff_result.stdout != ""
     ################################################################################## Copiando alterações
 
@@ -65,7 +61,6 @@
     - mount:
         path: /mnt/{{ item.dst }}
         state: absent
-      become: true
       loop:
         - /mnt/origem/
         - /mnt/destino/

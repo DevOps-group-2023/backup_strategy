@@ -17,7 +17,6 @@
 # nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas           nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/spcontas
 
 - hosts: 
-  become: true
   vars:
     ansible_python_interpreter: /usr/bin/python3
   gather_facts: false
@@ -31,7 +30,7 @@
         opts: ro
         fstype: nfs
         state: ephemeral
-      become: true
+
       loop:
         - { src: 'intra', dst: 'intra' }
         - { src: 'batch', dst: 'batch' }
@@ -46,7 +45,6 @@
         opts: ro
         fstype: nfs
         state: ephemeral
-      become: true
       loop:
         - { src: 'intra', dst: 'intra' }
         - { src: 'batch', dst: 'batch' }
@@ -56,36 +54,33 @@
     ################################################################################## Realiza a copia dos arquivos
     - name: Pegando último arquivo da pasta INTRA
       shell: ls -t /mnt/origem/intra/ | head -1
-      become: true
       register: arquivo_atual_intra
 
     - name: Pegando último arquivo da pasta BATCH
       shell: ls -t /mnt/origem/batch/ | head -1
-      become: true
       register: arquivo_atual_batch
 
     - name: Pegando último arquivo da pasta SPCONTAS
       shell: ls -t /mnt/origem/spcontas/ | head -1
-      become: true
       register: arquivo_atual_spcontas
 
     - name: Copiando arquivos INTRA
       copy:
         src: /mnt/origem/intra/{{ arquivo_atual_intra.stdout }}
         dest: "/mnt/destino/intra"
-      become: true
+      
 
     - name: Copiando arquivos INTRA
       copy:
         src: /mnt/origem/batch/{{ arquivo_atual_batch.stdout }}
         dest: "/mnt/destino/batch"
-      become: true
+
 
     - name: Copiando arquivos
       copy:
         src: /mnt/origem/spcontas/{{ arquivo_atual_spcontas.stdout }}
         dest: "/mnt/destino/spcontas"
-      become: true
+      
     ################################################################################## Realiza a copia dos arquivos
 
     ################################################################################## Realiza a remoção do arquivo mais antigo da pasta
@@ -102,26 +97,23 @@
       file:
         path: /mnt/destino/intra/{{ ultimo_arquivo_intra }}
         state: absent
-      become: true
 
     - name: Remove file (delete file)
       file:
         path: /mnt/destino/batch/{{ ultimo_arquivo_batch }}
         state: absent
-      become: true
 
     - name: Remove file (delete file)
       file:
         path: /mnt/destino/spcontas/{{ ultimo_arquivo_spcontas }}
         state: absent
-      become: true
+
     ################################################################################## Realiza a remoção do arquivo mais antigo da pasta
 
     ################################################################################## Realiza a desmontagem
       mount:
         path: /mnt/{{ item.dst }}
         state: absent
-      become: true
       loop:
         - /mnt/origem/intra
         - /mnt/origem/batch
