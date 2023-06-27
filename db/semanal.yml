@@ -1,6 +1,6 @@
 ---
 
-- hosts: 
+- hosts:
   vars:
     ansible_python_interpreter: /usr/bin/python3
   gather_facts: false
@@ -8,87 +8,69 @@
   tasks:
     - name: Montar partição INTRA, BATH e SPCONTAS do SEMANAL
       mount:
-        src: nas3.dpe-go.intra:mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/{{item.src}}
-        path: /mnt/origem/{{item.dst}}
+        src: "nas3.dpe-go.intra:mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/{{ item.src }}"
+        path: "/mnt/origem/{{ item.dst }}"
         opts: ro
         fstype: nfs
         state: ephemeral
-
       loop:
-        - { src: 'intra', dst: 'intra' }
-        - { src: 'batch', dst: 'batch' }
-        - { src: 'spcontas', dst: 'spcontas' }
+        - {src: 'intra', dst: 'intra'}
+        - {src: 'batch', dst: 'batch'}
+        - {src: 'spcontas', dst: 'spcontas'}
 
     - name: Montar partição INTRA, BATH e SPCONTAS do SEMANAL
       mount:
-        src: nas3.dpe-go.intra:mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/{{item.src}}
-        path: /mnt/destino/{{item.dst}}
+        src: "nas3.dpe-go.intra:mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/{{ item.src }}"
+        path: "/mnt/destino/{{ item.dst }}"
         opts: ro
         fstype: nfs
         state: ephemeral
       loop:
-        - { src: 'intra', dst: 'intra' }
-        - { src: 'batch', dst: 'batch' }
-        - { src: 'spcontas', dst: 'spcontas' }
+        - {src: 'intra', dst: 'intra'}
+        - {src: 'batch', dst: 'batch'}
+        - {src: 'spcontas', dst: 'spcontas'}
 
-    - name: Pegando último arquivo da pasta INTRA
-      shell: ls -t /mnt/origem/intra/ | head -1
-      register: arquivo_atual_intra
+    - name: Pegando último arquivo da pasta INTRA, BATCH e SPCONTAS
+      shell: ls -t /mnt/origem/{{ item }}/ | head -1
+      register: arquivo_atual
+      loop:
+        - intra
+        - batch
+        - spcontas
 
-    - name: Pegando último arquivo da pasta BATCH
-      shell: ls -t /mnt/origem/batch/ | head -1
-      register: arquivo_atual_batch
-
-    - name: Pegando último arquivo da pasta SPCONTAS
-      shell: ls -t /mnt/origem/spcontas/ | head -1
-      register: arquivo_atual_spcontas
-
-    - name: Copiando arquivos INTRA
+    - name: Copiando arquivos INTRA, BATCH e SPCONTAS
       copy:
-        src: /mnt/origem/intra/{{ arquivo_atual_intra.stdout }}
-        dest: "/mnt/destino/intra"
+        src: "/mnt/origem/{{ item.0 }}/{{ item.1.stdout }}"
+        dest: "/mnt/destino/{{ item.0 }}"
+      loop:
+        - [intra, arquivo_atual_intra.stdout]
+        - [batch, arquivo_atual_batch.stdout]
+        - [spcontas, arquivo_atual_spcontas.stdout]
 
-    - name: Copiando arquivos INTRA
-      copy:
-        src: /mnt/origem/batch/{{ arquivo_atual_batch.stdout }}
-        dest: "/mnt/destino/batch"
+    - name: Pegando último arquivo da pasta INTRA, BATCH e SPCONTAS no destino
+      shell: ls -t /mnt/destino/{{ item }}/ | tail -1
+      register: ultimo_arquivo
+      loop:
+        - intra
+        - batch
+        - spcontas
 
-    - name: Copiando arquivos
-      copy:
-        src: /mnt/origem/spcontas/{{ arquivo_atual_spcontas.stdout }}
-        dest: "/mnt/destino/spcontas"
-
-    - shell: ls -t /mnt/destino/intra/ | tail -1
-      register: ultimo_arquivo_intra
-
-    - shell: ls -t /mnt/destino/batch/ | tail -1
-      register: ultimo_arquivo_batch
-
-    - shell: ls -t /mnt/destino/spcontas/ | tail -1
-      register: ultimo_arquivo_spcontas
-
-    - name: Remove file (delete file)
+    - name: Remove file (delete file) INTRA, BATCH e SPCONTAS
       file:
-        path: /mnt/destino/intra/{{ ultimo_arquivo_intra }}
+        path: "/mnt/destino/{{ item.0 }}/{{ item.1.stdout }}"
         state: absent
-
-    - name: Remove file (delete file)
-      file:
-        path: /mnt/destino/batch/{{ ultimo_arquivo_batch }}
-        state: absent
-
-    - name: Remove file (delete file)
-      file:
-        path: /mnt/destino/spcontas/{{ ultimo_arquivo_spcontas }}
-        state: absent
+      loop:
+        - [intra, arquivo_atual_intra.stdout]
+        - [batch, arquivo_atual_batch.stdout]
+        - [spcontas, arquivo_atual_spcontas.stdout]
 
     - mount:
-        path: /mnt/{{ item.dst }}
+        path: "/mnt/{{ item }}"
         state: unmounted
       loop:
-        - /mnt/origem/intra
-        - /mnt/origem/batch
-        - /mnt/origem/spcontas
-        - /mnt/destino/intra
-        - /mnt/destino/batch
-        - /mnt/destino/spcontas
+        - origem/intra
+        - origem/batch
+        - origem/spcontas
+        - destino/intra
+        - destino/batch
+        - destino/spcontas
