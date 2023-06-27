@@ -1,20 +1,4 @@
-# #####################################################
-# Backup Banco de dados DIARIO  -  Sempre ás 22h     #
-# #####################################################
-
-# Objetivo: copiar sempre o ultimo arquivo(7=Domingo), nesse caso sempre aos Domingo ás 22h. Atenção sempre mantém 7 dias e depois sobreescrever no 8 dia.
-
-# Passos do Playbook
-
-# 1) Montar - nas3.dpe-go.intra - INTRA,BATCH,SPCONTAS
-# 2) Montar - nas3.dpe-go.intra - intra,batch,spcontas
-# 3) Copiar o arquivo mais atual de Domingo pasta 7 - (Origem Diario) nas3.dpe-go.intra - INTRA,BATCH,SPCONTAS para Destino (Destino DIARIO) nas3.dpe-go.intra - intra,batch,spcontas
-# 4) Desmontar origem (nas3.dpe-go.intra - INTRA,BATCH,SPCONTAS) e Destino (nas3.dpe-go.intra - intra,batch,spcontas)
-
-
-# nas3.dpe-go.intra:mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra               nas3.dpe-go.intra:mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/intra          
-# nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch              nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/batch
-# nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas           nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/spcontas
+---
 
 - hosts: 
   vars:
@@ -22,7 +6,6 @@
   gather_facts: false
   become: true
   tasks:
-    ################################################################################## Realiza a montagem
     - name: Montar partição INTRA, BATH e SPCONTAS do SEMANAL
       mount:
         src: nas3.dpe-go.intra:mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/{{item.src}}
@@ -35,9 +18,7 @@
         - { src: 'intra', dst: 'intra' }
         - { src: 'batch', dst: 'batch' }
         - { src: 'spcontas', dst: 'spcontas' }
-    ################################################################################## Realiza a montagem
 
-    ################################################################################## Realiza a montagem
     - name: Montar partição INTRA, BATH e SPCONTAS do SEMANAL
       mount:
         src: nas3.dpe-go.intra:mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/{{item.src}}
@@ -49,9 +30,7 @@
         - { src: 'intra', dst: 'intra' }
         - { src: 'batch', dst: 'batch' }
         - { src: 'spcontas', dst: 'spcontas' }
-    ################################################################################## Realiza a montagem
-    
-    ################################################################################## Realiza a copia dos arquivos
+
     - name: Pegando último arquivo da pasta INTRA
       shell: ls -t /mnt/origem/intra/ | head -1
       register: arquivo_atual_intra
@@ -68,28 +47,23 @@
       copy:
         src: /mnt/origem/intra/{{ arquivo_atual_intra.stdout }}
         dest: "/mnt/destino/intra"
-      
 
     - name: Copiando arquivos INTRA
       copy:
         src: /mnt/origem/batch/{{ arquivo_atual_batch.stdout }}
         dest: "/mnt/destino/batch"
 
-
     - name: Copiando arquivos
       copy:
         src: /mnt/origem/spcontas/{{ arquivo_atual_spcontas.stdout }}
         dest: "/mnt/destino/spcontas"
-      
-    ################################################################################## Realiza a copia dos arquivos
 
-    ################################################################################## Realiza a remoção do arquivo mais antigo da pasta
     - shell: ls -t /mnt/destino/intra/ | tail -1
       register: ultimo_arquivo_intra
 
     - shell: ls -t /mnt/destino/batch/ | tail -1
       register: ultimo_arquivo_batch
-    
+
     - shell: ls -t /mnt/destino/spcontas/ | tail -1
       register: ultimo_arquivo_spcontas
 
@@ -108,12 +82,9 @@
         path: /mnt/destino/spcontas/{{ ultimo_arquivo_spcontas }}
         state: absent
 
-    ################################################################################## Realiza a remoção do arquivo mais antigo da pasta
-
-    ################################################################################## Realiza a desmontagem
-      mount:
+    - mount:
         path: /mnt/{{ item.dst }}
-        state: absent
+        state: unmounted
       loop:
         - /mnt/origem/intra
         - /mnt/origem/batch
@@ -121,4 +92,3 @@
         - /mnt/destino/intra
         - /mnt/destino/batch
         - /mnt/destino/spcontas
-    ################################################################################## Realiza a desmontagem
