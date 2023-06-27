@@ -30,7 +30,6 @@
         - qui
         - sex
         - sab
-        - dom
 
     - name: Executar diff
       command: diff /mnt/SRV_PERSEFONE3_STI/ /mnt/{{ item }}/
