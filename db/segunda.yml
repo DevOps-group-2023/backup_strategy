@@ -1,66 +1,11 @@
-# ####################################################
-# Backup dos Banco de dados Dirario  - Sempre ás 22h #
-# ####################################################
-
-# Objetivo: Transferir os backup do Storage 10.6.45.202 para o Storage nas3.dpe-go.intra. De segunda a Domingo. Ponto de atenção Quando for na outra segunda,
-# o arquivo que seria 8 vai sobreescrever o arquivo 1 que seria da primeira segunda feira.
-
-
-# Passos do Playbook
-
-# 1) Montar - 10.6.45.202 - INTRA,BATCH,SPCONTAS 1-7
-# 2) Montar - nas3.dpe-go.intra - intra,batch,spcontas 1-7
-# 3) Copiar arquivos (Origem) 10.6.45.202 - INTRA,BATCH,SPCONTAS 1-7 para Destino (Destino) nas3.dpe-go.intra - intra,batch,spcontas 1-7
-# 4) Desmontar origem (10.6.45.202 - INTRA,BATCH,SPCONTAS) e Destino (nas3.dpe-go.intra - intra,batch,spcontas) 1-7
-
-
-# Storage --> 10.6.45.202    Sempre ás 22h                                                           Storage --> nas3.dpe-go.intra Sempre ás 22h  
-
-
-# Segunda                                                                Segunda 
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/1/*-191001.tar.g        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/1/*-190002.tar.gz       nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/1/ls -t | head -1    nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas
-
-
-# Terça                                                                  Terça
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/2/*-191001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/2/*-190001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/2/ls -t | head -1     nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas
-
-# Quarta                                                                 Qaurta
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/3/*-191001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/3/*-190002.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/3/ls -t | head -1     nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas
-
-# Quinta                                                                 Quinta
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/4/*-191001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/4/*-190001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/4/ls -t | head -1     nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas
-
-# Sexta                                                                  Sexta
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/5/*-191001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/5/*-191001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/5/ls -t | head -1     nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas
-
-# Sabado                                                                Sabado
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/6/*-191001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/6/*-190001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/6/ls -t | head -1     nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas
-
-# Domingo                                                                Domingo
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/INTRA/7/*-191001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/BATCH/7/*-190001.tar.gz        nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch
-# 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/SPCONTAS/7/ls -t | head -1     nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas
+---
 
 - hosts: backup
-  become: true
+  gather_facts: false
   vars:
     ansible_python_interpreter: /usr/bin/python3
-  gather_facts: false
   become: true
   tasks:
-    ################################################################################## Realiza a montagem
     - name: Montar partição INTRA - Segunda
       mount:
         src: 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/{{item.src}}
@@ -70,27 +15,23 @@
         state: ephemeral
       become: true
       loop:
-        - { src: 'INTRA/1', dst: 'INTRA/1' }
-        - { src: 'BATCH/1', dst: 'BATCH/1' }
-        - { src: 'SPCONTAS/1', dst: 'SPCONTAS/1' }
-    ################################################################################## Realiza a montagem
+        - {src: 'INTRA/1', dst: 'INTRA/1'}
+        - {src: 'BATCH/1', dst: 'BATCH/1'}
+        - {src: 'SPCONTAS/1', dst: 'SPCONTAS/1'}
 
-    ################################################################################## Realiza a montagem
     - name: Montar partição INTRA - Segunda
       mount:
-        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/{{item.src}}
+        src: nas3.dpe-go.intra:/diario/{{item.src}}
         path: /mnt/{{item.dst}}
         opts: ro
         fstype: nfs
         state: ephemeral
       become: true
       loop:
-        - { src: 'prod-intra/bd/intra', dst: 'prod-intra/bd/intra' }
-        - { src: 'prod-intra/bd/batch', dst: 'prod-intra/bd/batch' }
-        - { src: 'prod-intra/bd/spcontas', dst: 'prod-intra/bd/spcontas' }
-    ################################################################################## Realiza a montagem
-    
-    ################################################################################## Realiza a copia dos arquivos
+        - {src: 'prod-intra/bd/intra', dst: 'prod-intra/bd/intra'}
+        - {src: 'prod-intra/bd/batch', dst: 'prod-intra/bd/batch'}
+        - {src: 'prod-intra/bd/spcontas', dst: 'prod-intra/bd/spcontas'}
+
     - name: Pegando último arquivo da pasta INTRA
       shell: ls -t /mnt/INTRA/1/ | head -1
       become: true
@@ -123,15 +64,13 @@
         src: /mnt/SPCONTAS/1/{{ arquivo_atual_spcontas.stdout }}
         dest: "/mnt/prod-intra/bd/spcontas"
       become: true
-    ################################################################################## Realiza a copia dos arquivos
 
-    ################################################################################## Realiza a remoção do arquivo mais antigo da pasta
     - shell: ls -t /mnt/prod-intra/bd/intra/ | tail -1
       register: ultimo_arquivo_intra
 
     - shell: ls -t /mnt/prod-intra/bd/batch/ | tail -1
       register: ultimo_arquivo_batch
-    
+
     - shell: ls -t /mnt/prod-intra/bd/spcontas/ | tail -1
       register: ultimo_arquivo_spcontas
 
@@ -152,18 +91,15 @@
         path: /mnt/prod-intra/bd/spcontas/{{ ultimo_arquivo_spcontas }}
         state: absent
       become: true
-    ################################################################################## Realiza a remoção do arquivo mais antigo da pasta
 
-    ################################################################################## Realiza a desmontagem
-      mount:
+    - mount:
         path: /mnt/{{ item.dst }}
         state: absent
       become: true
       loop:
-        - { src: 'prod-intra/bd/intra', dst: 'prod-intra/bd/intra' }
-        - { src: 'prod-intra/bd/batch', dst: 'prod-intra/bd/batch' }
-        - { src: 'prod-intra/bd/spcontas', dst: 'prod-intra/bd/spcontas' }
-        - { src: 'INTRA/1', dst: 'INTRA/1' }
-        - { src: 'BATCH/1', dst: 'BATCH/1' }
-        - { src: 'SPCONTAS/1', dst: 'SPCONTAS/1' }
-    ################################################################################## Realiza a desmontagem
+        - {src: 'prod-intra/bd/intra', dst: 'prod-intra/bd/intra'}
+        - {src: 'prod-intra/bd/batch', dst: 'prod-intra/bd/batch'}
+        - {src: 'prod-intra/bd/spcontas', dst: 'prod-intra/bd/spcontas'}
+        - {src: 'INTRA/1', dst: 'INTRA/1'}
+        - {src: 'BATCH/1', dst: 'BATCH/1'}
+        - {src: 'SPCONTAS/1', dst: 'SPCONTAS/1'}
