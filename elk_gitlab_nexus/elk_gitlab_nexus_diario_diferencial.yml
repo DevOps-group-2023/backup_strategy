@@ -1,269 +1,77 @@
-# ###########################################
-# Backup do ELK  Dirario  -  Sempre ás 22h  #
-# ###########################################
-
-
-# Objetivo: opiar todos os arquivos da diretorio backup_gitlab e backup_nexus, que estão no storage 10.6.45.202 para o nas3.dpe-go.intra. Ponto de antecção,
-# Sempre comprar o dia seguinte com o dia anterior, ou seja, se teve alteração nos arquivos de segunda para terça então copiar se não tem mantém.
-
-# Passos do Playbook
-
-# 1) Montar - 10.6.45.202:/backup/iris3/backup_gitlab e 10.6.45.202:/backup/iris3/backup_nexus
-# 2) Montar - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/{Segunda -Domingo} e nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/{Segunda -Domingo} 
-# 3) Copiar arquivos comparando, exemplo diff - (Origem - 10.6.45.202) para Destino (Destino - nas3.dpe-go.intra)
-# 4) Desmontar origem (Origem - 10.6.45.202) e Destino ( Destino - nas3.dpe-go.intra)
-
-
-# 10.6.45.202:/backup/iris3/backup_gitlab   nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/seg
-# 10.6.45.202:/backup/iris3/backup_gitlab   nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/ter
-# 10.6.45.202:/backup/iris3/backup_gitlab   nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/qua
-# 10.6.45.202:/backup/iris3/backup_gitlab   nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/qui
-# 10.6.45.202:/backup/iris3/backup_gitlab   nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/sex
-# 10.6.45.202:/backup/iris3/backup_gitlab   nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/sab
-# 10.6.45.202:/backup/iris3/backup_gitlab   nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/dom 
-
-
-
-# 10.6.45.202:/backup/iris3/backup_nexus  nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/seg
-# 10.6.45.202:/backup/iris3/backup_nexus  nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/ter
-# 10.6.45.202:/backup/iris3/backup_nexus  nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/qua
-# 10.6.45.202:/backup/iris3/backup_nexus  nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/qui
-# 10.6.45.202:/backup/iris3/backup_nexus  nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/sex
-# 10.6.45.202:/backup/iris3/backup_nexus  nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/sab
-# 10.6.45.202:/backup/iris3/backup_nexus  nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/dom
-
 - hosts: backup
   become: true
   vars:
     ansible_python_interpreter: /usr/bin/python3
   gather_facts: false
-  become: true
   tasks:
-    ################################################################################## Realiza a montagem
-    - name: Montar partição INTRA - Segunda
+    - name: Montar partição INTRA
       mount:
-        src: 10.6.45.202:/backup/iris3/backup_{{ item }}
-        path: /mnt/origem
+        src: "{{ item.src }}"
+        path: "/mnt/{{ item.dst }}"
         opts: ro
         fstype: nfs
         state: ephemeral
-      become: true
       loop:
-        - gitlab
-        - nexus
-    ################################################################################## Realiza a montagem
+        - { src: "10.6.45.202:/backup/iris3/backup_gitlab", dst: "origem" }
+        - { src: "10.6.45.202:/backup/iris3/backup_nexus", dst: "origem" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/seg", dst: "git-seg" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/ter", dst: "git-ter" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/qua", dst: "git-qua" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/qui", dst: "git-qui" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/sex", dst: "git-sex" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/sab", dst: "git-sab" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/dom", dst: "git-dom" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/seg", dst: "nexus-seg" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/ter", dst: "nexus-ter" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/qua", dst: "nexus-qua" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/qui", dst: "nexus-qui" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/sex", dst: "nexus-sex" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/sab", dst: "nexus-sab" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/dom", dst: "nexus-dom" }
 
-    ################################################################################## Realiza a montagem
-    - name: Montar partição INTRA - Segunda
-      mount:
-        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/{{ item.a }}/{{ item.b }}
-        path: /mnt/{{ item.a }}-{{item.b}}
-        opts: ro
-        fstype: nfs
-        state: ephemeral
-      become: true
+    - name: Executar diff
+      command: diff "/mnt/origem/" "/mnt/{{ item }}/"
+      register: diff_result
+      ignore_errors: true
       loop:
-        - { a: 'git', b: 'seg' }
-        - { a: 'git', b: 'ter' }
-        - { a: 'git', b: 'qua' }
-        - { a: 'git', b: 'qui' }
-        - { a: 'git', b: 'sex' }
-        - { a: 'git', b: 'sab' }
-        - { a: 'git', b: 'dom' }
-        - { a: 'nexus', b: 'seg' }
-        - { a: 'nexus', b: 'ter' }
-        - { a: 'nexus', b: 'qua' }
-        - { a: 'nexus', b: 'qui' }
-        - { a: 'nexus', b: 'sex' }
-        - { a: 'nexus', b: 'sab' }
-        - { a: 'nexus', b: 'dom' }
-    ################################################################################## Realiza a montagem
-    
-    ################################################################################## Realizando DIFF
-    - name: Executar diff Segunda
-      command: diff /mnt/origem/ /mnt/git-seg/
-      register: diff_result_git_seg
-      ignore_errors: true
-
-    - name: Executar diff Terça
-      command: diff /mnt/origem/ /mnt/git-ter/
-      register: diff_result_git_ter
-      ignore_errors: true
-
-    - name: Executar diff Quarta
-      command: diff /mnt/origem/ /mnt/git-qua/
-      register: diff_result_git_qua
-      ignore_errors: true
-
-    - name: Executar diff Quinta
-      command: diff /mnt/origem/ /mnt/git-qui/
-      register: diff_result_git_qui
-      ignore_errors: true
-
-    - name: Executar diff Sexta
-      command: diff /mnt/origem/ /mnt/git-sex/
-      register: diff_result_git_sex
-      ignore_errors: true
-
-    - name: Executar diff Sabado
-      command: diff /mnt/origem/ /mnt/git-sab/
-      register: diff_result_git_sab
-      ignore_errors: true
-
-    - name: Executar diff Domingo
-      command: diff /mnt/origem/ /mnt/git-dom/
-      register: diff_result_git_dom
-      ignore_errors: true
-
-    - name: Executar diff Segunda
-      command: diff /mnt/origem/ /mnt/nexus-seg/
-      register: diff_result_nexus_seg
-      ignore_errors: true
-
-    - name: Executar diff Terça
-      command: diff /mnt/origem/ /mnt/nexus-ter/
-      register: diff_result_nexus_ter
-      ignore_errors: true
-
-    - name: Executar diff Quarta
-      command: diff /mnt/origem/ /mnt/nexus-qua/
-      register: diff_result_nexus_qua
-      ignore_errors: true
-
-    - name: Executar diff Quinta
-      command: diff /mnt/origem/ /mnt/nexus-qui/
-      register: diff_result_nexus_qui
-      ignore_errors: true
-
-    - name: Executar diff Sexta
-      command: diff /mnt/origem/ /mnt/nexus-sex/
-      register: diff_result_nexus_sex
-      ignore_errors: true
-
-    - name: Executar diff Sabado
-      command: diff /mnt/origem/ /mnt/nexus-sab/
-      register: diff_result_nexus_sab
-      ignore_errors: true
-
-    - name: Executar diff Domingo
-      command: diff /mnt/origem/ /mnt/nexus-dom/s
-      register: diff_result_nexus_dom
-      ignore_errors: true
-
-    ################################################################################## Realizando DIFF
-
-    ################################################################################## Copiando alterações
-    - name: Copiando arquivos
-      copy:
-        src: /mnt/origem/
-        dest: /mnt/git-seg/
-      become: true
-      when: diff_result_git_seg.stdout != ""
-
-    - name: Copiando arquivos 
-      copy:
-        src: /mnt/origem/
-        dest: /mnt/git-ter/
-      become: true
-      when: diff_result_git_ter.stdout != ""
+        - git-seg
+        - git-ter
+        - git-qua
+        - git-qui
+        - git-sex
+        - git-sab
+        - git-dom
+        - nexus-seg
+        - nexus-ter
+        - nexus-qua
+        - nexus-qui
+        - nexus-sex
+        - nexus-sab
+        - nexus-dom
 
     - name: Copiando arquivos
       copy:
-        src: /mnt/origem/
-        dest: /mnt/git-qua/
-      become: true
-      when: diff_result_git_qua.stdout != ""
+        src: "/mnt/origem/"
+        dest: "/mnt/{{ item }}/"
+      when: diff_result.results[loop.index0].stdout != ""
 
-    - name: Copiando arquivos
-      copy:
-        src: /mnt/origem/
-        dest: /mnt/git-qui/
-      become: true
-      when: diff_result_git_qui.stdout != ""
-
-    - name: Copiando arquivos
-      copy:
-        src: /mnt/origem/
-        dest: /mnt/git-sex/
-      become: true
-      when: diff_result_git_sex.stdout != ""
-
-    - name: Copiando arquivos
-      copy:
-        src: /mnt/origem/
-        dest: /mnt/git-sab/
-      become: true
-      when: diff_result_git_sab.stdout != ""
-
-    - name: Copiando arquivos
-      copy:
-        src: /mnt/origem/
-        dest: /mnt/git-dom/
-      become: true
-      when: diff_result_git_dom.stdout != ""
-
-    - name: Copiando arquivos
-      copy:
-        src: /mnt/origem/
-        dest: /mnt/nexus-seg/
-      become: true
-      when: diff_result_nexus_seg.stdout != ""
-
-    - name: Copiando arquivos 
-      copy:
-        src: /mnt/origem/
-        dest: /mnt/nexus-ter/
-      become: true
-      when: diff_result_nexus_ter.stdout != ""
-
-    - name: Copiando arquivos
-      copy:
-        src: /mnt/origem/
-        dest: /mnt/nexus-qua/
-      become: true
-      when: diff_result_nexus_qua.stdout != ""
-
-    - name: Copiando arquivos
-      copy:
-        src: /mnt/origem/
-        dest: /mnt/nexus-qui/
-      become: true
-      when: diff_result_nexus_qui.stdout != ""
-
-    - name: Copiando arquivos
-      copy:
-        src: /mnt/origem/
-        dest: /mnt/nexus-sex/
-      become: true
-      when: diff_result_nexus_sex.stdout != ""
-
-    - name: Copiando arquivos
-      copy:
-        src: /mnt/origem/
-        dest: /mnt/nexus-sab/
-      become: true
-      when: diff_result_nexus_sab.stdout != ""
-
-    - name: Copiando arquivos
-      copy:
-        src: /mnt/origem/
-        dest: /mnt/nexus-dom/
-      become: true
-      when: diff_result_nexus_dom.stdout != ""
-    ################################################################################## Copiando alterações
-
-
-    ################################################################################## Realiza a desmontagem
+    - name: Removendo montagem
       mount:
-        path: /mnt/{{ item.dst }}
+        path: "/mnt/{{ item }}/"
         state: absent
-      become: true
       loop:
-        - /mnt/SRV_PERSEFONE3_STI/
-        - /mnt/seg
-        - /mnt/ter
-        - /mnt/qua
-        - /mnt/qui
-        - /mnt/sex
-        - /mnt/sab
-    ################################################################################## Realiza a desmontagem
+        - origem
+        - git-seg
+        - git-ter
+        - git-qua
+        - git-qui
+        - git-sex
+        - git-sab
+        - git-dom
+        - nexus-seg
+        - nexus-ter
+        - nexus-qua
+        - nexus-qui
+        - nexus-sex
+        - nexus-sab
+        - nexus-dom
