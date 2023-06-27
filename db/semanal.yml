@@ -20,7 +20,7 @@
 
     - name: Montar partição INTRA, BATH e SPCONTAS do SEMANAL
       mount:
-        src: "nas3.dpe-go.intra:mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/{{ item.src }}"
+        src: "nas3.dpe-go.intra:mnt/SEMANAL/{{ item.src }}"
         path: "/mnt/destino/{{ item.dst }}"
         opts: ro
         fstype: nfs
