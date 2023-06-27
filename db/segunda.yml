@@ -10,7 +10,7 @@
       mount:
         src: 10.6.45.202:/backup1/SGBD/SRV_CRONOS3A_STI/data/diario/{{item.src}}
         path: /mnt/{{item.dst}}
-        opts: ro
+        opts: rw
         fstype: nfs
         state: ephemeral
       become: true
@@ -23,7 +23,7 @@
       mount:
         src: nas3.dpe-go.intra:/diario/{{item.src}}
         path: /mnt/{{item.dst}}
-        opts: ro
+        opts: rw
         fstype: nfs
         state: ephemeral
       become: true
@@ -51,18 +51,21 @@
       copy:
         src: /mnt/INTRA/1/{{ arquivo_atual_intra.stdout }}
         dest: "/mnt/prod-intra/bd/intra"
+        remote_src: true
       become: true
 
     - name: Copiando arquivos INTRA
       copy:
         src: /mnt/BATCH/1/{{ arquivo_atual_batch.stdout }}
         dest: "/mnt/prod-intra/bd/batch"
+        remote_src: true
       become: true
 
     - name: Copiando arquivos
       copy:
         src: /mnt/SPCONTAS/1/{{ arquivo_atual_spcontas.stdout }}
         dest: "/mnt/prod-intra/bd/spcontas"
+        remote_src: true
       become: true
 
     - shell: ls -t /mnt/prod-intra/bd/intra/ | tail -1
