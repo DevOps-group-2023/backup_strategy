@@ -1,38 +1,12 @@
-# ###################################
-# Backup dos Arquivos  Dirario      #
-# ###################################
-
-
-# Objetivo: Copiar todos os arquivos da diretorio SRV_PERSEFONE3_STI que está no storage 10.6.45.202 para o nas3.dpe-go.intra. Ponto de antecção,
-# Sempre comprar o di seguinte com o dia anterior, ou seja, se teve alteração nos arquivos de segunda para terça então copiar se não tem mantém.
-
-# Passos do Playbook
-
-
-# 1) Montar - 10.6.45.202- /backup2/FILESERVER/SRV_PERSEFONE3_STI/SRV_PERSEFONE3_STI
-# 2) Montar - nas3.dpe-go.intra - /mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/arquivos/diferencial/{Seg-Sab}
-# 3) Copiar arquivos comparando, exemplo diff - (Origem - 10.6.45.202) para Destino (Destino - nas3.dpe-go.intra)
-# 4) Desmontar origem (Origem - 10.6.45.202) e Destino ( Destino - nas3.dpe-go.intra)
-
-
-
-# 10.6.45.202:/backup2/FILESERVER/SRV_PERSEFONE3_STI/SRV_PERSEFONE3_STI       nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/arquivos/diferencial/seg
-#                                                                             nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/arquivos/diferencial/ter
-#                                                                             nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/arquivos/diferencial/qua
-#                                                                             nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/arquivos/diferencial/qui
-#                                                                             nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/arquivos/diferencial/sex
-#                                                                             nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/arquivos/diferencial/sab
-#                                                                             nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/arquivos/diferencial/dom 
+---
 
 - hosts: backup
   become: true
   vars:
     ansible_python_interpreter: /usr/bin/python3
   gather_facts: false
-  become: true
   tasks:
-    ################################################################################## Realiza a montagem
-    - name: Montar partição INTRA - Segunda
+    - name: Montar partição INTRA
       mount:
         src: 10.6.45.202:/backup2/FILESERVER/SRV_PERSEFONE3_STI/SRV_PERSEFONE3_STI
         path: /mnt/SRV_PERSEFONE3_STI
@@ -41,10 +15,7 @@
         state: ephemeral
       become: true
 
-    ################################################################################## Realiza a montagem
-
-    ################################################################################## Realiza a montagem
-    - name: Montar partição INTRA - Segunda
+    - name: Montar partição INTRA
       mount:
         src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/arquivos/diferencial/{{ item }}
         path: /mnt/{{ item }}
@@ -61,91 +32,41 @@
         - sab
         - dom
 
-    ################################################################################## Realiza a montagem
-    
-    ################################################################################## Realizando DIFF
-    - name: Executar diff Segunda
-      command: diff /mnt/SRV_PERSEFONE3_STI/ /mnt/seg/
-      register: diff_result_seg
+    - name: Executar diff
+      command: diff /mnt/SRV_PERSEFONE3_STI/ /mnt/{{ item }}/
+      register: diff_result
       ignore_errors: true
+      loop:
+        - seg
+        - ter
+        - qua
+        - qui
+        - sex
+        - sab
+      vars:
+        diff_result_seg: "{{ diff_result.results[0] }}"
+        diff_result_ter: "{{ diff_result.results[1] }}"
+        diff_result_qua: "{{ diff_result.results[2] }}"
+        diff_result_qui: "{{ diff_result.results[3] }}"
+        diff_result_sex: "{{ diff_result.results[4] }}"
+        diff_result_sab: "{{ diff_result.results[5] }}"
 
-    - name: Executar diff terça
-      command: diff /mnt/SRV_PERSEFONE3_STI/ /mnt/ter/
-      register: diff_result_ter
-      ignore_errors: true
-
-    - name: Executar diff Quarta
-      command: diff /mnt/SRV_PERSEFONE3_STI/ /mnt/qua/
-      register: diff_result_qua
-      ignore_errors: true
-
-    - name: Executar diff Quinta
-      command: diff /mnt/SRV_PERSEFONE3_STI/ /mnt/qui/
-      register: diff_result_qui
-      ignore_errors: true
-
-    - name: Executar diff Sexta
-      command: diff /mnt/SRV_PERSEFONE3_STI/ /mnt/sex/
-      register: diff_result_sex
-      ignore_errors: true
-      when: diff_result.stdout == ""
-
-    - name: Executar diff Sábado
-      command: diff /mnt/SRV_PERSEFONE3_STI/ /mnt/sab/
-      register: diff_result_sab
-      ignore_errors: true
-    ################################################################################## Realizando DIFF
-
-    ################################################################################## Copiando alterações
-    - name: Copiando arquivos PERSEFONE3_STI
+    - name: Copiar arquivos PERSEFONE3_STI
       copy:
         src: /mnt/SRV_PERSEFONE3_STI/
-        dest: /mnt/seg/
-      become: true
-      when: diff_result_seg.stdout != ""
+        dest: "/mnt/{{ item }}"
+      loop:
+        - seg
+        - ter
+        - qua
+        - qui
+        - sex
+        - sab
+      when: vars['diff_result_'+item].stdout != ""
 
-    - name: Copiando arquivos PERSEFONE3_STI
-      copy:
-        src: /mnt/SRV_PERSEFONE3_STI/
-        dest: /mnt/ter/
-      become: true
-      when: diff_result_ter.stdout != ""
-
-    - name: Copiando arquivos PERSEFONE3_STI
-      copy:
-        src: /mnt/SRV_PERSEFONE3_STI/
-        dest: /mnt/qua/
-      become: true
-      when: diff_result_qua.stdout != ""
-
-    - name: Copiando arquivos PERSEFONE3_STI
-      copy:
-        src: /mnt/SRV_PERSEFONE3_STI/
-        dest: /mnt/qui/
-      become: true
-      when: diff_result_qui.stdout != ""
-
-    - name: Copiando arquivos PERSEFONE3_STI
-      copy:
-        src: /mnt/SRV_PERSEFONE3_STI/
-        dest: /mnt/sex/
-      become: true
-      when: diff_result_sex.stdout != ""
-
-    - name: Copiando arquivos PERSEFONE3_STI
-      copy:
-        src: /mnt/SRV_PERSEFONE3_STI/
-        dest: /mnt/sab/
-      become: true
-      when: diff_result_sab.stdout != ""
-    ################################################################################## Copiando alterações
-
-
-    ################################################################################## Realiza a desmontagem
-      mount:
+    - mount:
         path: /mnt/{{ item.dst }}
         state: absent
-      become: true
       loop:
         - /mnt/SRV_PERSEFONE3_STI/
         - /mnt/seg
@@ -154,4 +75,3 @@
         - /mnt/qui
         - /mnt/sex
         - /mnt/sab
-    ################################################################################## Realiza a desmontagem

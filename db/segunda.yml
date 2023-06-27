@@ -43,7 +43,7 @@
       register: arquivo_atual_batch
 
     - name: Pegando último arquivo da pasta SPCONTAS
-      shell: ls -t/mnt/SPCONTAS/1/ | head -1
+      shell: ls -t /mnt/SPCONTAS/1/ | head -1
       become: true
       register: arquivo_atual_spcontas
 
