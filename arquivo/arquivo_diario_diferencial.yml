@@ -10,7 +10,7 @@
       mount:
         src: 10.6.45.202:/backup2/FILESERVER/SRV_PERSEFONE3_STI/SRV_PERSEFONE3_STI
         path: /mnt/SRV_PERSEFONE3_STI
-        opts: ro
+        opts: rw
         fstype: nfs
         state: ephemeral
       become: true
@@ -19,7 +19,7 @@
       mount:
         src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/arquivos/diferencial/{{ item }}
         path: /mnt/{{ item }}
-        opts: ro
+        opts: rw
         fstype: nfs
         state: ephemeral
       become: true
