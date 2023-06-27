@@ -12,8 +12,8 @@
         fstype: nfs
         state: ephemeral
       loop:
-        - { src: "10.6.45.202:/backup/iris3/backup_gitlab", dst: "origem" }
-        - { src: "10.6.45.202:/backup/iris3/backup_nexus", dst: "origem" }
+        - { src: "10.6.45.202:/backup/iris3/backup_gitlab", dst: "git-origem" }
+        - { src: "10.6.45.202:/backup/iris3/backup_nexus", dst: "nexus-origem" }
         - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/seg", dst: "git-seg" }
         - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/ter", dst: "git-ter" }
         - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/qua", dst: "git-qua" }
@@ -30,7 +30,7 @@
         - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/dom", dst: "nexus-dom" }
 
     - name: Executar diff
-      command: diff "/mnt/origem/" "/mnt/{{ item }}/"
+      command: diff "/mnt/git-origem/" "/mnt/{{ item }}/"
       register: diff_result
       ignore_errors: true
       loop:
@@ -41,6 +41,12 @@
         - git-sex
         - git-sab
         - git-dom
+
+    - name: Executar diff
+      command: diff "/mnt/nexus-origem/" "/mnt/{{ item }}/"
+      register: diff_result2
+      ignore_errors: true
+      loop:
         - nexus-seg
         - nexus-ter
         - nexus-qua
@@ -51,9 +57,15 @@
 
     - name: Copiando arquivos
       copy:
-        src: "/mnt/origem/"
+        src: "/mnt/git-origem/"
         dest: "/mnt/{{ item }}/"
-      when: diff_result.results[loop.index0].stdout != ""
+      when: vars['diff_result'+item].stdout != ""
+
+    - name: Copiando arquivos
+      copy:
+        src: "/mnt/nexus-origem/"
+        dest: "/mnt/{{ item }}/"
+      when: vars['diff_result2'+item].stdout != ""
 
     - name: Removendo montagem
       mount:
