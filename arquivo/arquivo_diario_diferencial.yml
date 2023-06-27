@@ -17,7 +17,7 @@
 
     - name: Montar partição INTRA
       mount:
-        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/arquivos/diferencial/{{ item }}
+        src: nas3.dpe-go.intra:/DIARIO/{{ item }}
         path: /mnt/{{ item }}
         opts: rw
         fstype: nfs
@@ -43,6 +43,7 @@
         - qui
         - sex
         - sab
+
       vars:
         diff_result_seg: "{{ diff_result.results[0] }}"
         diff_result_ter: "{{ diff_result.results[1] }}"
@@ -66,7 +67,7 @@
 
     - mount:
         path: /mnt/{{ item.dst }}
-        state: absent
+        state: unmounted
       loop:
         - /mnt/SRV_PERSEFONE3_STI/
         - /mnt/seg
