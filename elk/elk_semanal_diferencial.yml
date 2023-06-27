@@ -35,7 +35,7 @@
 
       mount:
         path: /mnt/{{ item.dst }}
-        state: absent
+        state: unmounted
       loop:
         - /mnt/origem/
         - /mnt/destino/
