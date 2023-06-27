@@ -1,80 +1,41 @@
-# ###########################################
-# Backup do ELK  Dirario  -  Sempre ás 22h  #
-# ###########################################
-
-
-# Objetivo: Copiar todos os arquivos da diretorio ELK  que está no storage 10.6.45.202 para o nas3.dpe-go.intra. Ponto de antecção,
-# Sempre comprar o di seguinte com o dia anterior, ou seja, se teve alteração nos arquivos de segunda para terça então copiar se não tem mantém.
-
-# Passos do Playbook
-
-
-# 1) Montar - 10.6.45.202:/backup/prod_intra/horas3a/ELK 
-# 2) Montar - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
-# 3) Copiar arquivos comparando, exemplo diff - (Origem - 10.6.45.202) para Destino (Destino - nas3.dpe-go.intra)
-# 4) Desmontar origem (Origem - 10.6.45.202) e Destino ( Destino - nas3.dpe-go.intra)
-
-
-# 10.6.45.202:/backup/prod_intra/horas3a/ELK     Segunda - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
-#                                                Terça - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
-#                                                Qaurta - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/ 
-#                                                Quinta - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
-#                                                Sexta - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
-#                                                Sabado - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
-#                                                Domingo - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
+---
 
 - hosts: backup
   become: true
   vars:
     ansible_python_interpreter: /usr/bin/python3
   gather_facts: false
-  become: true
   tasks:
-    ################################################################################## Realiza a montagem
     - name: Montar partição INTRA
       mount:
         src: 10.6.45.202:/backup/prod_intra/horas3a/ELK
         path: /mnt/origem
-        opts: ro
+        opts: rw
         fstype: nfs
         state: ephemeral
-      become: true
 
-    ################################################################################## Realiza a montagem
-
-    ################################################################################## Realiza a montagem
     - name: Montar partição
       mount:
         src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
         path: /mnt/destino
-        opts: ro
+        opts: rw
         fstype: nfs
         state: ephemeral
-      become: true
-    ################################################################################## Realiza a montagem
-    
-    ################################################################################## Realizando DIFF
+
     - name: Executar diff
       command: diff /mnt/origem/ /mnt/destino/
       register: diff_result
       ignore_errors: true
-    ################################################################################## Realizando DIFF
 
-    ################################################################################## Copiando alterações
     - name: Copiando arquivoss
       copy:
         src: /mnt/origem/
         dest: /mnt/destino/
-      become: true
       when: diff_result.stdout != ""
-    ################################################################################## Copiando alterações
 
-    ################################################################################## Realiza a desmontagem
       mount:
         path: /mnt/{{ item.dst }}
         state: absent
-      become: true
       loop:
         - /mnt/origem/
         - /mnt/destino/
-    ################################################################################## Realiza a desmontagem
