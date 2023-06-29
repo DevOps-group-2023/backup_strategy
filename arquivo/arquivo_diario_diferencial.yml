@@ -17,7 +17,7 @@
 
     - name: Montar partição INTRA
       mount:
-        src: nas3.dpe-go.intra:/DIARIO/{{ item }}
+        src: nas3.dpe-go.intra:/diario/{{ item }}
         path: /mnt/{{ item }}
         opts: rw
         fstype: nfs
