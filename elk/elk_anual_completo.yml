@@ -23,7 +23,7 @@
     ################################################################################## Realiza a montagem
     - name: Montar partição 
       mount:
-        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
+        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-intra/elk/completo/
         path: /mnt/origem
         opts: ro
         fstype: nfs
@@ -35,7 +35,7 @@
     ################################################################################## Realiza a montagem
     - name: Montar partição
       mount:
-        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
+        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-intra/elk/completo/
         path: /mnt/destino
         opts: ro
         fstype: nfs
