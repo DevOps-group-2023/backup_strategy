@@ -43,47 +43,47 @@
         - sex
         - sab
 
-    - name: Copiar arquivos PERSEFONE3_STI
-      copy:
+    - name: Copiar arquivos de forma diferencial com rsync
+      synchronize:
         src: /mnt/SRV_PERSEFONE3_STI/
-        dest: "/mnt/seg"
-        remote_src: true
-      when: diff_result.results[0].rc != "0"
+        dest: /mnt/seg/
+        recursive: yes
+        delete: yes
 
-    - name: Copiar arquivos PERSEFONE3_STI
-      copy:
+    - name: Copiar arquivos de forma diferencial com rsync
+      synchronize:
         src: /mnt/SRV_PERSEFONE3_STI/
-        dest: "/mnt/ter"
-        remote_src: true
-      when: diff_result.results[1].rc != "1"
+        dest: /mnt/ter/
+        recursive: yes
+        delete: yes
 
-    - name: Copiar arquivos PERSEFONE3_STI
-      copy:
+    - name: Copiar arquivos de forma diferencial com rsync
+      synchronize:
         src: /mnt/SRV_PERSEFONE3_STI/
-        dest: "/mnt/qua"
-        remote_src: true
-      when: diff_result.results[2].rc != "2"
+        dest: /mnt/qua/
+        recursive: yes
+        delete: yes
 
-    - name: Copiar arquivos PERSEFONE3_STI
-      copy:
+    - name: Copiar arquivos de forma diferencial com rsync
+      synchronize:
         src: /mnt/SRV_PERSEFONE3_STI/
-        dest: "/mnt/qui"
-        remote_src: true
-      when: diff_result.results[3].rc != "3"
+        dest: /mnt/qui/
+        recursive: yes
+        delete: yes
 
-    - name: Copiar arquivos PERSEFONE3_STI
-      copy:
+    - name: Copiar arquivos de forma diferencial com rsync
+      synchronize:
         src: /mnt/SRV_PERSEFONE3_STI/
-        dest: "/mnt/sex"
-        remote_src: true
-      when: diff_result.results[4].rc != "4"
+        dest: /mnt/sex/
+        recursive: yes
+        delete: yes
 
-    - name: Copiar arquivos PERSEFONE3_STI
-      copy:
+    - name: Copiar arquivos de forma diferencial com rsync
+      synchronize:
         src: /mnt/SRV_PERSEFONE3_STI/
-        dest: "/mnt/sab"
-        remote_src: true
-      when: diff_result.results[5].rc != "5"
+        dest: /mnt/sab/
+        recursive: yes
+        delete: yes
 
     - mount:
         path: /mnt/{{ item.dst }}
