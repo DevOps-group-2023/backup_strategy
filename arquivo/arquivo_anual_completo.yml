@@ -1,16 +1,4 @@
-# ###################################
-# Backup dos Arquivos  - Anual      #
-# ###################################
-
-# Objetivo: Copiar sempre o Uma vez a cada Ano. Horario não defenido, será por demanda.
-
-# Passos do Playbook
-
-
-# 1) Montar - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/SEMANAL/prod-intra/arquivos/completo 
-# 2) Montar - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/SEMANAL/prod-intra/arquivos/completo
-# 3) Copiar arquivos comparando, exemplo diff - (Origem - nas3.dpe-go.intra) para Destino (Destino - nas3.dpe-go.intra)
-# 4) Desmontar origem (Origem - nas3.dpe-go.intra) e Destino ( Destino - nas3.dpe-go.intra)
+---
 
 - hosts: backup
   become: true
