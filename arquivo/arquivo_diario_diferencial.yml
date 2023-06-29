@@ -43,26 +43,47 @@
         - sex
         - sab
 
-      vars:
-        diff_result_seg: "{{ diff_result.results[0] }}"
-        diff_result_ter: "{{ diff_result.results[1] }}"
-        diff_result_qua: "{{ diff_result.results[2] }}"
-        diff_result_qui: "{{ diff_result.results[3] }}"
-        diff_result_sex: "{{ diff_result.results[4] }}"
-        diff_result_sab: "{{ diff_result.results[5] }}"
+    - name: Copiar arquivos PERSEFONE3_STI
+      copy:
+        src: /mnt/SRV_PERSEFONE3_STI/
+        dest: "/mnt/seg"
+        remote_src: true
+      when: diff_result.results[0].rc != "0"
 
     - name: Copiar arquivos PERSEFONE3_STI
       copy:
         src: /mnt/SRV_PERSEFONE3_STI/
-        dest: "/mnt/{{ item }}"
-      loop:
-        - seg
-        - ter
-        - qua
-        - qui
-        - sex
-        - sab
-      when: vars['diff_result_'+item].stdout != ""
+        dest: "/mnt/ter"
+        remote_src: true
+      when: diff_result.results[1].rc != "1"
+
+    - name: Copiar arquivos PERSEFONE3_STI
+      copy:
+        src: /mnt/SRV_PERSEFONE3_STI/
+        dest: "/mnt/qua"
+        remote_src: true
+      when: diff_result.results[2].rc != "2"
+
+    - name: Copiar arquivos PERSEFONE3_STI
+      copy:
+        src: /mnt/SRV_PERSEFONE3_STI/
+        dest: "/mnt/qui"
+        remote_src: true
+      when: diff_result.results[3].rc != "3"
+
+    - name: Copiar arquivos PERSEFONE3_STI
+      copy:
+        src: /mnt/SRV_PERSEFONE3_STI/
+        dest: "/mnt/sex"
+        remote_src: true
+      when: diff_result.results[4].rc != "4"
+
+    - name: Copiar arquivos PERSEFONE3_STI
+      copy:
+        src: /mnt/SRV_PERSEFONE3_STI/
+        dest: "/mnt/sab"
+        remote_src: true
+      when: diff_result.results[5].rc != "5"
 
     - mount:
         path: /mnt/{{ item.dst }}
