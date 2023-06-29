@@ -25,7 +25,7 @@
     ################################################################################## Realiza a montagem
     - name: Montar partição INTRA
       mount:
-        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/SEMANAL/prod-intra/arquivos/completo 
+        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/semanal/prod-intra/arquivos/completo 
         path: /mnt/origem
         opts: ro
         fstype: nfs
@@ -36,7 +36,7 @@
     ################################################################################## Realiza a montagem
     - name: Montar partição INTRA
       mount:
-        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/SEMANAL/prod-intra/arquivos/completo
+        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/semanal/prod-intra/arquivos/completo
         path: /mnt/destino
         opts: ro
         fstype: nfs
