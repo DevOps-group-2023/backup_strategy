@@ -6,32 +6,27 @@
     ansible_python_interpreter: /usr/bin/python3
   become: true
   tasks:
-    - name: Montar partição INTRA
+    - name: Montar partição
       mount:
-        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-intra/arquivos/diferencial/dom
+        src: 10.6.45.202:/backup2/FILESERVER/SRV_CLIO30A/
         path: /mnt/origem
         opts: ro
         fstype: nfs
         state: ephemeral
 
-    - name: Montar partição INTRA
+    - name: Montar partição
       mount:
-        src: nas3.dpe-go.intra:/semanal/prod-intra/arquivos/completo
+        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/semanal/ava-prod-public/arquivos/completo/
         path: /mnt/destino
         opts: ro
         fstype: nfs
         state: ephemeral
 
-    - name: Executar diff Segunda
-      command: diff /mnt/origem/ /mnt/destino/
-      register: diff_result
-      ignore_errors: true
-
-    - name: Copiando arquivos PERSEFONE3_STI
+    - name: Copiando arquivos
       copy:
         src: /mnt/origem/
         dest: /mnt/destino
-      when: diff_result.stdout != ""
+        remote_src: true
 
     - mount:
         path: /mnt/{{ item.dst }}

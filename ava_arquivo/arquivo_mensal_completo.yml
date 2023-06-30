@@ -1,55 +1,36 @@
 ---
 
 - hosts: backup
-  become: true
+  gather_facts: false
   vars:
     ansible_python_interpreter: /usr/bin/python3
-  gather_facts: false
+  become: true
   tasks:
-    ################################################################################## Realiza a montagem
-    - name: Montar partição INTRA
+    - name: Montar partição
       mount:
-        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/semanal/prod-intra/arquivos/completo 
+        src: 10.6.45.202:/backup2/FILESERVER/SRV_CLIO30A/
         path: /mnt/origem
         opts: ro
         fstype: nfs
         state: ephemeral
-      become: true
-    ################################################################################## Realiza a montagem
 
-    ################################################################################## Realiza a montagem
-    - name: Montar partição INTRA
+    - name: Montar partição
       mount:
-        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/semanal/prod-intra/arquivos/completo
+        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/mensal/ava-prod-public/arquivos/completo/
         path: /mnt/destino
         opts: ro
         fstype: nfs
         state: ephemeral
-      become: true
-    ################################################################################## Realiza a montagem
-    
-    ################################################################################## Realizando DIFF
-    - name: Executar diff Segunda
-      command: diff /mnt/origem/ /mnt/destino/
-      register: diff_result
-      ignore_errors: true
-    ################################################################################## Realizando DIFF
 
-    ################################################################################## Copiando alterações
-    - name: Copiando arquivos PERSEFONE3_STI
+    - name: Copiando arquivos
       copy:
         src: /mnt/origem/
         dest: /mnt/destino
-      become: true
-      when: diff_result.stdout != ""
-    ################################################################################## Copiando alterações
+        remote_src: true
 
-    ################################################################################## Realiza a desmontagem
     - mount:
         path: /mnt/{{ item.dst }}
-        state: absent
-      become: true
+        state: unmounted
       loop:
         - /mnt/origem/
         - /mnt/destino/
-    ################################################################################## Realiza a desmontagem
