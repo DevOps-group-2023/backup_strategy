@@ -29,50 +29,41 @@
         - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/sab", dst: "nexus-sab" }
         - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/dom", dst: "nexus-dom" }
 
-    - name: Executar diff
-      command: diff "/mnt/git-origem/" "/mnt/{{ item }}/"
-      register: diff_result
-      ignore_errors: true
-      loop:
-        - git-seg
-        - git-ter
-        - git-qua
-        - git-qui
-        - git-sex
-        - git-sab
-        - git-dom
-
-    - name: Executar diff
-      command: diff "/mnt/nexus-origem/" "/mnt/{{ item }}/"
-      register: diff_result2
-      ignore_errors: true
-      loop:
-        - nexus-seg
-        - nexus-ter
-        - nexus-qua
-        - nexus-qui
-        - nexus-sex
-        - nexus-sab
-        - nexus-dom
-
     - name: Copiando arquivos
       copy:
         src: "/mnt/git-origem/"
         dest: "/mnt/{{ item }}/"
-      when: vars['diff_result'+item].stdout != ""
+        remote_src: true
+      loop:
+        - "git-seg"
+        - "git-ter"
+        - "git-qua"
+        - "git-qui"
+        - "git-sex"
+        - "git-sab"
+        - "git-dom"
 
     - name: Copiando arquivos
       copy:
         src: "/mnt/nexus-origem/"
         dest: "/mnt/{{ item }}/"
-      when: vars['diff_result2'+item].stdout != ""
+        remote_src: true
+      loop:
+        - "nexus-seg"
+        - "nexus-ter"
+        - "nexus-qua"
+        - "nexus-qui"
+        - "nexus-sex"
+        - "nexus-sab"
+        - "nexus-dom"
 
     - name: Removendo montagem
       mount:
         path: "/mnt/{{ item }}/"
         state: absent
       loop:
-        - origem
+        - git-origem
+        - nexus-origem
         - git-seg
         - git-ter
         - git-qua
