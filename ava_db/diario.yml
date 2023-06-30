@@ -1,0 +1,145 @@
+---
+
+- hosts: backup
+  gather_facts: false
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  become: true
+  tasks:
+    - name: Montar partição INTRA - Segunda
+      mount:
+        src: 10.6.45.202:/backup1/SGBD/SRV_ERATO30A_CLD/diario/MOODLE_PROD/{{item.src}}
+        path: /mnt/{{item.dst}}
+        opts: rw
+        fstype: nfs
+        state: ephemeral
+      become: true
+      loop:
+        - {src: '1', dst: 'origem_1'}
+        - {src: '2', dst: 'origem_2'}
+        - {src: '3', dst: 'origem_3'}
+        - {src: '4', dst: 'origem_4'}
+        - {src: '5', dst: 'origem_5'}
+        - {src: '6', dst: 'origem_6'}
+        - {src: '7', dst: 'origem_7'}
+
+    - name: Montar partição INTRA - Segunda
+      mount:
+        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/ava-prod-public/bd/{{item.src}}
+        path: /mnt/{{item.dst}}
+        opts: rw
+        fstype: nfs
+        state: ephemeral
+      become: true
+      loop:
+        - {src: '1', dst: 'destino_1'}
+        - {src: '2', dst: 'destino_2'}
+        - {src: '3', dst: 'destino_3'}
+        - {src: '4', dst: 'destino_4'}
+        - {src: '5', dst: 'destino_5'}
+        - {src: '6', dst: 'destino_6'}
+        - {src: '7', dst: 'destino_7'}
+
+    - name: Pegando último arquivo da pasta 1
+      shell: ls -t /mnt/1/ | head -1
+      become: true
+      register: arquivo_atual_1
+
+    - name: Pegando último arquivo da pasta 2
+      shell: ls -t /mnt/2/ | head -1
+      become: true
+      register: arquivo_atual_2
+
+    - name: Pegando último arquivo da pasta 4
+      shell: ls -t /mnt/4/ | head -1
+      become: true
+      register: arquivo_atual_4
+
+    - name: Pegando último arquivo da pasta 5
+      shell: ls -t /mnt/5/ | head -1
+      become: true
+      register: arquivo_atual_5
+
+    - name: Pegando último arquivo da pasta 6
+      shell: ls -t /mnt/6/ | head -1
+      become: true
+      register: arquivo_atual_6
+
+    - name: Pegando último arquivo da pasta 7
+      shell: ls -t /mnt/7/ | head -1
+      become: true
+      register: arquivo_atual_7
+
+    - name: Copiando arquivos
+      copy:
+        src: "{{ item.src }}"
+        dest: "/mnt/{{item.dst}}/"
+        remote_src: true
+      loop: 
+        - {src: '/mnt/origem_1/{{ arquivo_atual_1.stdout }}/', dst: 'destino_1'}
+        - {src: '/mnt/origem_2/{{ arquivo_atual_2.stdout }}/', dst: 'destino_2'}
+        - {src: '/mnt/origem_3/{{ arquivo_atual_3.stdout }}/', dst: 'destino_3'}
+        - {src: '/mnt/origem_4/{{ arquivo_atual_4.stdout }}/', dst: 'destino_4'}
+        - {src: '/mnt/origem_5/{{ arquivo_atual_5.stdout }}/', dst: 'destino_5'}
+        - {src: '/mnt/origem_6/{{ arquivo_atual_6.stdout }}/', dst: 'destino_6'}
+        - {src: '/mnt/origem_7/{{ arquivo_atual_7.stdout }}/', dst: 'destino_7'}
+
+    - shell: ls -t /mnt/destino_1/ | tail -1
+      register: ultimo_arquivo_1
+
+    - shell: ls -t /mnt/destino_2/ | tail -1
+      register: ultimo_arquivo_2
+
+    - shell: ls -t /mnt/destino_3/ | tail -1
+      register: ultimo_arquivo_3
+
+    - shell: ls -t /mnt/destino_4/ | tail -1
+      register: ultimo_arquivo_4
+
+    - shell: ls -t /mnt/destino_5/ | tail -1
+      register: ultimo_arquivo_5
+
+    - shell: ls -t /mnt/destino_6/ | tail -1
+      register: ultimo_arquivo_6
+
+    - shell: ls -t /mnt/destino_7/ | tail -1
+      register: ultimo_arquivo_7
+
+    - name: Remove file (delete file)
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop: 
+        - /mnt/destino_1/{{ ultimo_arquivo_1.stdout }}
+        - /mnt/destino_2/{{ ultimo_arquivo_2.stdout }}
+        - /mnt/destino_3/{{ ultimo_arquivo_3.stdout }}
+        - /mnt/destino_4/{{ ultimo_arquivo_4.stdout }}
+        - /mnt/destino_5/{{ ultimo_arquivo_5.stdout }}
+        - /mnt/destino_6/{{ ultimo_arquivo_6.stdout }}
+        - /mnt/destino_7/{{ ultimo_arquivo_7.stdout }}
+
+    - mount:
+        path: /mnt/origem_{{ item }}
+        state: unmounted
+      become: true
+      loop:
+        - "1"
+        - "2"
+        - "3"
+        - "4"
+        - "5"
+        - "6"
+        - "7"
+
+    - mount:
+        path: /mnt/destino_{{ item }}
+        state: unmounted
+      become: true
+      loop:
+        - "1"
+        - "2"
+        - "3"
+        - "4"
+        - "5"
+        - "6"
+        - "7"
