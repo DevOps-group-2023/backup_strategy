@@ -23,7 +23,7 @@
         fstype: nfs
         state: ephemeral
 
-    - name: Copiando arquivos INTRA, BATCH e SPCONTAS
+    - name: Copiando arquivos
       copy:
         src: "/mnt/origem/"
         dest: "/mnt/destino/"

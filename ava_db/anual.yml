@@ -1,70 +1,37 @@
 ---
 
 - hosts:
-  become: true
   vars:
     ansible_python_interpreter: /usr/bin/python3
   gather_facts: false
+  become: true
   tasks:
-    - name: Montar partição INTRA, BATH e SPCONTAS
+
+    - name: Montar partição 
       mount:
-        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/{{item.src}}
-        path: /mnt/origem/{{item.dst}}
+        src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/mensal/ava-prod-public/bd/"
+        path: "/mnt/origem/"
         opts: ro
         fstype: nfs
         state: ephemeral
-      become: true
-      loop:
-        - {src: 'intra', dst: 'intra'}
-        - {src: 'batch', dst: 'batch'}
-        - {src: 'spcontas', dst: 'spcontas'}
 
-    - name: Montar partição INTRA
+    - name: Montar partição 
       mount:
-        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/ANUAL/prod-intra/bd/{{item.src}}
-        path: /mnt/destino/{{item.dst}}
+        src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/anual/ava-prod-public/bd/"
+        path: "/mnt/destino/"
         opts: ro
         fstype: nfs
         state: ephemeral
-      become: true
-      loop:
-        - {src: 'intra', dst: 'intra'}
-        - {src: 'batch', dst: 'batch'}
-        - {src: 'spcontas', dst: 'spcontas'}
-    ################################################################################## Realiza a montagem
-
-    ################################################################################## Realiza a copia dos arquivos
-    - name: Copiando arquivos
-      copy:
-        src: "{{ item.src }}"
-        dest: "{{ item.dst }}"
-      become: true
-      loop:
-        - {src: '/mnt/INTRA/1/*-191001.tar.gz', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/intra/'}
-        - {src: '/mnt/BATCH/1/*-190002.tar.gz', dst: '/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/batch/'}
-
-    - name: Pegando último arquivo da pasta SPCONTAS
-      shell: ls -t /mnt/SPCONTAS/1/' | head -1
-      become: true
-      register: arquivo_atual_spcontas
-
 
     - name: Copiando arquivos
       copy:
-        src: /mnt/SPCONTAS/1/{{ arquivo_atual.stdout }}
-        dest: "/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/bd/spcontas/"
-      become: true
-    ################################################################################## Realiza a copia dos arquivos
+        src: "/mnt/origem/"
+        dest: "/mnt/destino/"
+        remote_src: true
 
-    ################################################################################## Realiza a desmontagem
-      mount:
-        path: /mnt/{{ item.dst }}
-        state: absent
+    - mount:
+        path: "/mnt/{{ item }}"
+        state: unmounted
       loop:
-        - dst: 'intra' 
-        - dst: 'batch'
-        - dst: 'spcontas'
-        - dst: 'INTRA/1'
-        - dst: 'BATCH/1'
-        - dst: 'SPCONTAS/1'
-    ################################################################################## Realiza a desmontagem
+        - origem
+        - destino

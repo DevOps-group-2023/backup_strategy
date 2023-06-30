@@ -1,131 +1,37 @@
-# ###################################
-# Backup dos Banco de dados Mensal  #
-# ###################################
+---
 
-# Objetivo: Copiar sempre o primeiro dia de cada mês. Nesse caso ás 23h. 
-
-# Passos do Playbook
-
-# 1) Montar - nas3.dpe-go.intra - INTRA,BATCH,SPCONTAS
-# 2) Montar - nas3.dpe-go.intra - intra,batch,spcontas
-# 3) Copiar arquivos o Ultimo arquivo de Domingo - (Origem Semanal) nas3.dpe-go.intra - INTRA,BATCH,SPCONTAS para Destino (Destino Mensal) nas3.dpe-go.intra - intra,batch,spcontas
-# 4) Desmontar origem (nas3.dpe-go.intra - INTRA,BATCH,SPCONTAS) e Destino (nas3.dpe-go.intra - intra,batch,spcontas)
- 
-# nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/SEMANAL/prod-intra/bd/intra         nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/intra        
-# nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/SEMANAL/prod-intra/bd/batch         nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/batch
-# nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/SEMANAL/prod-intra/bd/spcontas      nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/spcontas
-
-- hosts: 
-  become: true
+- hosts:
   vars:
     ansible_python_interpreter: /usr/bin/python3
   gather_facts: false
   become: true
   tasks:
-    ################################################################################## Realiza a montagem
-    - name: Montar partição INTRA, BATH e SPCONTAS do MENSAL 
+
+    - name: Montar partição 
       mount:
-        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/SEMANAL/prod-intra/bd/{{item.src}}
-        path: /mnt/origem/{{item.dst}}
+        src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/semanal/ava-prod-public/bd/"
+        path: "/mnt/origem/"
         opts: ro
         fstype: nfs
         state: ephemeral
-      become: true
-      loop:
-        - { src: 'intra', dst: 'intra' }
-        - { src: 'batch', dst: 'batch' }
-        - { src: 'spcontas', dst: 'spcontas' }
-    ################################################################################## Realiza a montagem
 
-    ################################################################################## Realiza a montagem
-    - name: Montar partição INTRA, BATH e SPCONTAS do MENSAL
+    - name: Montar partição 
       mount:
-        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/MENSAL/prod-intra/bd/{{item.src}}
-        path: /mnt/destino/{{item.dst}}
+        src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/mensal/ava-prod-public/bd/"
+        path: "/mnt/destino/"
         opts: ro
         fstype: nfs
         state: ephemeral
-      become: true
-      loop:
-        - { src: 'intra', dst: 'intra' }
-        - { src: 'batch', dst: 'batch' }
-        - { src: 'spcontas', dst: 'spcontas' }
-    ################################################################################## Realiza a montagem
-    
-    ################################################################################## Realiza a copia dos arquivos
-    - name: Pegando último arquivo da pasta INTRA
-      shell: ls -t /mnt/origem/intra/ | head -1
-      become: true
-      register: arquivo_atual_intra
-
-    - name: Pegando último arquivo da pasta BATCH
-      shell: ls -t /mnt/origem/batch/ | head -1
-      become: true
-      register: arquivo_atual_batch
-
-    - name: Pegando último arquivo da pasta SPCONTAS
-      shell: ls -t /mnt/origem/spcontas/ | head -1
-      become: true
-      register: arquivo_atual_spcontas
-
-    - name: Copiando arquivos INTRA
-      copy:
-        src: /mnt/origem/intra/{{ arquivo_atual_intra.stdout }}
-        dest: "/mnt/destino/intra"
-      become: true
-
-    - name: Copiando arquivos INTRA
-      copy:
-        src: /mnt/origem/batch/{{ arquivo_atual_batch.stdout }}
-        dest: "/mnt/destino/batch"
-      become: true
 
     - name: Copiando arquivos
       copy:
-        src: /mnt/origem/spcontas/{{ arquivo_atual_spcontas.stdout }}
-        dest: "/mnt/destino/spcontas"
-      become: true
-    ################################################################################## Realiza a copia dos arquivos
+        src: "/mnt/origem/"
+        dest: "/mnt/destino/"
+        remote_src: true
 
-    ################################################################################## Realiza a remoção do arquivo mais antigo da pasta
-    - shell: ls -t /mnt/destino/intra/ | tail -1
-      register: ultimo_arquivo_intra
-
-    - shell: ls -t /mnt/destino/batch/ | tail -1
-      register: ultimo_arquivo_batch
-    
-    - shell: ls -t /mnt/destino/spcontas/ | tail -1
-      register: ultimo_arquivo_spcontas
-
-    - name: Remove file (delete file)
-      file:
-        path: /mnt/destino/intra/{{ ultimo_arquivo_intra }}
-        state: absent
-      become: true
-
-    - name: Remove file (delete file)
-      file:
-        path: /mnt/destino/batch/{{ ultimo_arquivo_batch }}
-        state: absent
-      become: true
-
-    - name: Remove file (delete file)
-      file:
-        path: /mnt/destino/spcontas/{{ ultimo_arquivo_spcontas }}
-        state: absent
-      become: true
-    ################################################################################## Realiza a remoção do arquivo mais antigo da pasta
-
-    ################################################################################## Realiza a desmontagem
-      mount:
-        path: /mnt/{{ item.dst }}
-        state: absent
-      become: true
+    - mount:
+        path: "/mnt/{{ item }}"
+        state: unmounted
       loop:
-        - /mnt/origem/intra
-        - /mnt/origem/batch
-        - /mnt/origem/spcontas
-        - /mnt/destino/intra
-        - /mnt/destino/batch
-        - /mnt/destino/spcontas
-    ################################################################################## Realiza a desmontagem
+        - origem
+        - destino
