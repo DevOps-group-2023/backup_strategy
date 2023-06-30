@@ -28,30 +28,20 @@
         - nexus
         - git
 
-    - name: Executar diff
-      command: diff /mnt/origem-nexus/ /mnt/destino-nexus/
-      register: diff_result_nexus
-      ignore_errors: true
-
-    - name: Executar diff
-      command: diff /mnt/origem-git/ /mnt/destino-git/
-      register: diff_result_git
-      ignore_errors: true
-
     - name: Copiando arquivos
       copy:
         src: /mnt/origem-git/
         dest: /mnt/destino-git/
-      when: diff_result_git.stdout != ""
+        remote_src: true
 
     - name: Copiando arquivos
       copy:
         src: /mnt/origem-nexus/
         dest: /mnt/destino-nexus/
-      when: diff_result_nexus.stdout != ""
+        remote_src: true
 
       mount:
-        path: /mnt/{{ item.dst }}
+        path: /mnt/{{ item }}
         state: unmounted
       loop:
         - /mnt/origem-git/
