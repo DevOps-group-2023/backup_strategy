@@ -1,20 +1,4 @@
-# ###########################################
-# Backup do ELK  Mensal -  Sempre ás 23h    #
-# ###########################################   
-
-# Objetivo: Copiar sempre o primeiro dia de cada mês. Nesse caso ás 23h. 
-
-# Passos do Playbook
-
-
-# 1) Montar - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
-# 2) Montar - nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
-# 3) Copiar arquivos comparando, exemplo diff - (Origem - nas3.dpe-go.intra) para Destino (Destino - nas3.dpe-go.intra)
-# 4) Desmontar origem (Origem - nas3.dpe-go.intra) e Destino ( Destino - nas3.dpe-go.intra)
-
-
-
-# nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/   nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-intra/elk/completo/
+---
 
 - hosts: backup
   become: true
@@ -22,7 +6,7 @@
     ansible_python_interpreter: /usr/bin/python3
   gather_facts: false
   tasks:
-    ################################################################################## Realiza a montagem
+
     - name: Montar partição INTRA
       mount:
         src: 10.6.45.202:/backup/prod_intra/horas3a/ELK
@@ -30,11 +14,7 @@
         opts: ro
         fstype: nfs
         state: ephemeral
-      become: true
 
-    ################################################################################## Realiza a montagem
-
-    ################################################################################## Realiza a montagem
     - name: Montar partição
       mount:
         src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-intra/elk/completo/
@@ -42,31 +22,16 @@
         opts: ro
         fstype: nfs
         state: ephemeral
-      become: true
-    ################################################################################## Realiza a montagem
-    
-    ################################################################################## Realizando DIFF
-    - name: Executar diff
-      command: diff /mnt/origem/ /mnt/destino/
-      register: diff_result
-      ignore_errors: true
-    ################################################################################## Realizando DIFF
 
-    ################################################################################## Copiando alterações
     - name: Copiando arquivoss
       copy:
         src: /mnt/origem/
         dest: /mnt/destino/
-      become: true
-      when: diff_result.stdout != ""
-    ################################################################################## Copiando alterações
+        remote_src: true
 
-    ################################################################################## Realiza a desmontagem
       mount:
         path: /mnt/{{ item.dst }}
         state: absent
-      become: true
       loop:
         - /mnt/origem/
         - /mnt/destino/
-    ################################################################################## Realiza a desmontagem
