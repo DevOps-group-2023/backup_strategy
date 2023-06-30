@@ -14,20 +14,20 @@
       loop:
         - { src: "10.6.45.202:/backup/iris3/backup_gitlab", dst: "git-origem" }
         - { src: "10.6.45.202:/backup/iris3/backup_nexus", dst: "nexus-origem" }
-        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/seg", dst: "git-seg" }
-        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/ter", dst: "git-ter" }
-        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/qua", dst: "git-qua" }
-        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/qui", dst: "git-qui" }
-        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/sex", dst: "git-sex" }
-        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/sab", dst: "git-sab" }
-        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/git/dom", dst: "git-dom" }
-        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/seg", dst: "nexus-seg" }
-        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/ter", dst: "nexus-ter" }
-        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/qua", dst: "nexus-qua" }
-        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/qui", dst: "nexus-qui" }
-        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/sex", dst: "nexus-sex" }
-        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/sab", dst: "nexus-sab" }
-        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/DIARIO/prod-devops/nexus/dom", dst: "nexus-dom" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-devops/git/seg", dst: "git-seg" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-devops/git/ter", dst: "git-ter" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-devops/git/qua", dst: "git-qua" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-devops/git/qui", dst: "git-qui" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-devops/git/sex", dst: "git-sex" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-devops/git/sab", dst: "git-sab" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-devops/git/dom", dst: "git-dom" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-devops/nexus/seg", dst: "nexus-seg" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-devops/nexus/ter", dst: "nexus-ter" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-devops/nexus/qua", dst: "nexus-qua" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-devops/nexus/qui", dst: "nexus-qui" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-devops/nexus/sex", dst: "nexus-sex" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-devops/nexus/sab", dst: "nexus-sab" }
+        - { src: "nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-devops/nexus/dom", dst: "nexus-dom" }
 
     - name: Copiando arquivos
       copy:
