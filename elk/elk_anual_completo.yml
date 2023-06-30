@@ -11,7 +11,7 @@
       mount:
         src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-intra/elk/completo/
         path: /mnt/origem
-        opts: ro
+        opts: rw
         fstype: nfs
         state: ephemeral
 
@@ -19,7 +19,7 @@
       mount:
         src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-intra/elk/completo/
         path: /mnt/destino
-        opts: ro
+        opts: rw
         fstype: nfs
         state: ephemeral
 
@@ -30,7 +30,7 @@
         remote_src: true
 
       mount:
-        path: /mnt/{{ item.dst }}
+        path: /mnt/{{ item }}
         state: unmounted
       loop:
         - /mnt/origem/

@@ -10,7 +10,7 @@
       mount:
         src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/prod-intra/elk/completo/
         path: /mnt/origem
-        opts: ro
+        opts: rw
         fstype: nfs
         state: ephemeral
 
@@ -18,23 +18,18 @@
       mount:
         src: nas3.dpe-go.intra:/SEMANAL/prod-intra/elk/completo
         path: /mnt/destino
-        opts: ro
+        opts: rw
         fstype: nfs
         state: ephemeral
-
-    - name: Executar diff
-      command: diff /mnt/origem/ /mnt/destino/
-      register: diff_result
-      ignore_errors: true
 
     - name: Copiando arquivos
       copy:
         src: /mnt/origem/
         dest: /mnt/destino/
-      when: diff_result.stdout != ""
+        remote_src: true
 
       mount:
-        path: /mnt/{{ item.dst }}
+        path: /mnt/{{ item }}
         state: unmounted
       loop:
         - /mnt/origem/

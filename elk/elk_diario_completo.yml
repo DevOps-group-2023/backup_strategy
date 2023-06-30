@@ -29,7 +29,7 @@
         remote_src: true
 
       mount:
-        path: /mnt/{{ item.dst }}
+        path: /mnt/{{ item }}
         state: unmounted
       loop:
         - /mnt/origem/
