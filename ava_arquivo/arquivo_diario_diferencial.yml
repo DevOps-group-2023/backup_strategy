@@ -6,18 +6,18 @@
     ansible_python_interpreter: /usr/bin/python3
   gather_facts: false
   tasks:
-    - name: Montar partição INTRA
+    - name: Montar partição
       mount:
-        src: 10.6.45.202:/backup2/FILESERVER/SRV_PERSEFONE3_STI/SRV_PERSEFONE3_STI
-        path: /mnt/SRV_PERSEFONE3_STI
+        src: 10.6.45.202:/backup2/FILESERVER/SRV_CLIO30A/moodledata/
+        path: /mnt/origem/
         opts: rw
         fstype: nfs
         state: ephemeral
       become: true
 
-    - name: Montar partição INTRA
+    - name: Montar partição
       mount:
-        src: nas3.dpe-go.intra:/diario/{{ item }}
+        src: nas3.dpe-go.intra:/mnt/STG7A_UDMARISTA/NAS3/diario/ava-prod-public/arquivos/diferencial/{{ item }}
         path: /mnt/{{ item }}
         opts: rw
         fstype: nfs
@@ -31,56 +31,44 @@
         - sex
         - sab
 
-    - name: Executar diff
-      command: diff /mnt/SRV_PERSEFONE3_STI/ /mnt/{{ item }}/
-      register: diff_result
-      ignore_errors: true
-      loop:
-        - seg
-        - ter
-        - qua
-        - qui
-        - sex
-        - sab
-
     - name: Copiar arquivos de forma diferencial com rsync
       synchronize:
-        src: /mnt/SRV_PERSEFONE3_STI/
+        src: /mnt/origem
         dest: /mnt/seg/
         recursive: yes
         delete: yes
 
     - name: Copiar arquivos de forma diferencial com rsync
       synchronize:
-        src: /mnt/SRV_PERSEFONE3_STI/
+        src: /mnt/origem
         dest: /mnt/ter/
         recursive: yes
         delete: yes
 
     - name: Copiar arquivos de forma diferencial com rsync
       synchronize:
-        src: /mnt/SRV_PERSEFONE3_STI/
+        src: /mnt/origem
         dest: /mnt/qua/
         recursive: yes
         delete: yes
 
     - name: Copiar arquivos de forma diferencial com rsync
       synchronize:
-        src: /mnt/SRV_PERSEFONE3_STI/
+        src: /mnt/origem
         dest: /mnt/qui/
         recursive: yes
         delete: yes
 
     - name: Copiar arquivos de forma diferencial com rsync
       synchronize:
-        src: /mnt/SRV_PERSEFONE3_STI/
+        src: /mnt/origem
         dest: /mnt/sex/
         recursive: yes
         delete: yes
 
     - name: Copiar arquivos de forma diferencial com rsync
       synchronize:
-        src: /mnt/SRV_PERSEFONE3_STI/
+        src: /mnt/origem
         dest: /mnt/sab/
         recursive: yes
         delete: yes
@@ -89,7 +77,7 @@
         path: /mnt/{{ item.dst }}
         state: unmounted
       loop:
-        - /mnt/SRV_PERSEFONE3_STI/
+        - /mnt/origem
         - /mnt/seg
         - /mnt/ter
         - /mnt/qua
